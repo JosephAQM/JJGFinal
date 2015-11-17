@@ -15,42 +15,108 @@
 GLOBALS
 ***************************************************************************************/
 
-//Terrain heightmap
-float terrain[300][300];
+int currentLevel;
 
-//Parallel array to terrain[][] that signies if the point should be used in
-//the circles algorithm.
-bool toCircle[300][300];
-
-//0 = solid, 1 = wireframe, 2 = both
-int drawMode = 0;
-
-//Terrain dimensions
-int terrainSizeX = 0;
-int terrainSizeZ = 0;
-
-float terrainCircleSize = 30;
-
-//Camera stuff
+//Camera stuff (from A2, might be useful)
 float pos[] = {0,0,0};
 float rot[] = {0, 1, 0};
 float headRot[] = {0, 0, 0};
 float camPos[] = {7, 7, 7};
 float angle = 0.0f;
 
-//light stuff
+//light stuff (from A2, might be useful)
 float lightpos[4] = {0, 2, 0, 0};
 float amb[4] = {1, 1, 1, 1};
 float diff[4] = {2, 2,2, 2};
 float spec[4] = {0, 0, 1, 1};
 bool useLight = true;
 
-//selected quad
-int selX = 0;
-int selZ = 0;
+/***************************************************************************************
+FUNCTIONS
+***************************************************************************************/
+
+//Possible breakdown of classes
+
+class Player {
+
+	//Player location
+	float xPos;
+	float yPos;
+	float zPos;
+
+	//Possible state for jumping
+	bool jumping;
+
+	void draw(){
+
+	}
+
+	//Move in the direction the player is currently facing
+	void move(){
+
+	}
+
+	//Rotate character, use string input to determine CW or CCW?
+	void rotate(string direction){
+
+	}
+
+	//Does the player jump?
+	void jump(){
+
+	}
 
 
+};
 
+//Blocks to be pushed by player
+class Block {
+
+	//Block dimensions
+	float xDim;
+	float yDim;
+	float zDim;
+
+	//Block positions (can be defined as the center of the box for simplicity)
+	float xPos;
+	float yPos;
+	float zPos;
+
+	//Draws the block
+	void draw(){
+
+	}
+
+	//Moves the block, should blocks move in set intervals? aka have a sort of grid system
+	//within the map
+	void move(){
+
+	}
+};
+
+//The general map that the player and objects are placed in
+//Should the map just be hardcoded?
+class Map {
+	void draw(){
+
+	}
+};
+
+//Responsible for loading the individual puzzlbes
+//Block placement, checking win conditions, etc
+//one puzzle object = one set of block placements
+class Puzzle{
+
+
+	bool checkWin(){
+		
+	}
+
+
+};
+
+
+//Keyboard controls
 void keyboard(unsigned char key, int x, int y)
 {
 
@@ -65,6 +131,7 @@ void keyboard(unsigned char key, int x, int y)
 	glutPostRedisplay();
 }
 
+//Special key entries
 void special(int key, int x, int y)
 {
 	//Move camera
@@ -90,9 +157,7 @@ void init(void)
 }
 
 
-/* display function - GLUT display callback function
- *		clears the screen, sets the camera position, draws the ground plane and movable box
- */
+// display function - GLUT display callback function 
 void display(void)
 {
 	float origin[3] = {0,0,0};
@@ -107,12 +172,11 @@ void display(void)
 	glutSwapBuffers();
 }
 
-/* main function - program entry point */
+// main function - program entry point
 int main(int argc, char** argv)
 {
 
-	printf("\nWelcome to Joseph's Terrain Assignment!\n\nControls:\nArrow Keys -> Camera movement\n'e' -> Toggle wireframe modes'\n'f' -> Toggle lighting\n'i,j,k,l' -> Move terrain selection (red square)\n'y' -> Increase height of selected terrain\n'q' -> Quit\n\n");
-
+	printf("\nWelcome to our final project!\n");
 
 	glutInit(&argc, argv);		//starts up GLUT
 	
