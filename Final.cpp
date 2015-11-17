@@ -38,7 +38,7 @@ FUNCTIONS
 //Possible breakdown of classes
 
 class Player {
-
+private:
 	//Player location
 	float xPos;
 	float yPos;
@@ -47,6 +47,36 @@ class Player {
 	//Possible state for jumping
 	bool jumping;
 
+public:
+	//Constructors
+	Player(){
+		xPos = 0;
+		yPos = 0;
+		zPos = 0;
+		jumping = false;
+	}
+
+	Player(float x, float y, float z){
+		xPos = x;
+		yPos = y;
+		zPos = z;
+		jumping = false;
+	}
+
+	//Getters
+	float getXPos(){
+		return xPos;
+	}
+
+	float getYPos(){
+		return yPos;
+	}
+
+	float getZPos(){
+		return zPos;
+	}
+
+	//Functions
 	void draw(){
 
 	}
@@ -57,7 +87,7 @@ class Player {
 	}
 
 	//Rotate character, use string input to determine CW or CCW?
-	void rotate(string direction){
+	void rotate(){
 
 	}
 
@@ -71,7 +101,7 @@ class Player {
 
 //Blocks to be pushed by player
 class Block {
-
+private:
 	//Block dimensions
 	float xDim;
 	float yDim;
@@ -81,6 +111,55 @@ class Block {
 	float xPos;
 	float yPos;
 	float zPos;
+
+public:
+	//Constructors
+	Block(){
+		xDim = 1;
+		yDim = 1;
+		zDim = 1;
+
+		xPos = 0;
+		yPos = 0;
+		zPos = 0;
+	}
+
+	Block(float xD, float yD, float zD, float xP, float yP, float zP){
+		xDim = xD;
+		yDim = yD;
+		zDim = zD;
+
+		xPos = xP;
+		yPos = yP;
+		zPos = zP;
+	}
+
+	//Getters, setters are unecessary as blocks shouldn't be teleporting or changing sizes(?)
+	float getXPos(){
+		return xPos;
+	}
+
+	float getYPos(){
+		return yPos;
+	}
+
+	float getZPos(){
+		return zPos;
+	}
+
+	float getXDim(){
+		return xDim;
+	}
+
+	float getYDim(){
+		return yDim;
+	}
+
+	float getZDim(){
+		return zDim;
+	}
+
+	//Functions
 
 	//Draws the block
 	void draw(){
@@ -92,6 +171,7 @@ class Block {
 	void move(){
 
 	}
+
 };
 
 //The general map that the player and objects are placed in
@@ -109,7 +189,7 @@ class Puzzle{
 
 
 	bool checkWin(){
-		
+
 	}
 
 
