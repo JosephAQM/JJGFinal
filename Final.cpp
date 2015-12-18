@@ -9,272 +9,132 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
-
-/***************************************************************************************
-GLOBALS
-***************************************************************************************/
-
-int currentLevel;
-
-//Camera stuff (from A2, might be useful)
-float pos[] = {0,0,0};
-float rot[] = {0, 1, 0};
-float headRot[] = {0, 0, 0};
-float camPos[] = {7, 7, 7};
 float angle = 0.0f;
-
-//light stuff (from A2, might be useful)
-float lightpos[4] = {0, 2, 0, 0};
-float amb[4] = {1, 1, 1, 1};
-float diff[4] = {2, 2,2, 2};
-float spec[4] = {0, 0, 1, 1};
-bool useLight = true;
-
-/***************************************************************************************
-FUNCTIONS
-***************************************************************************************/
-
-//Possible breakdown of classes
-
-class Player {
-private:
-	//Player location
-	float xPos;
-	float yPos;
-	float zPos;
-
-	//Possible state for jumping
-	bool jumping;
-
-public:
-	//Constructors
-	Player(){
-		xPos = 0;
-		yPos = 0;
-		zPos = 0;
-		jumping = false;
-	}
-
-	Player(float x, float y, float z){
-		xPos = x;
-		yPos = y;
-		zPos = z;
-		jumping = false;
-	}
-
-	//Getters
-	float getXPos(){
-		return xPos;
-	}
-
-	float getYPos(){
-		return yPos;
-	}
-
-	float getZPos(){
-		return zPos;
-	}
-
-	//Functions
-	void draw(){
-
-	}
-
-	//Move in the direction the player is currently facing
-	void move(){
-
-	}
-
-	//Rotate character, use string input to determine CW or CCW?
-	void rotate(){
-
-	}
-
-	//Does the player jump?
-	void jump(){
-
-	}
-
-
-};
-
-//Blocks to be pushed by player
-class Block {
-private:
-	//Block dimensions
-	float xDim;
-	float yDim;
-	float zDim;
-
-	//Block positions (can be defined as the center of the box for simplicity)
-	float xPos;
-	float yPos;
-	float zPos;
-
-public:
-	//Constructors
-	Block(){
-		xDim = 1;
-		yDim = 1;
-		zDim = 1;
-
-		xPos = 0;
-		yPos = 0;
-		zPos = 0;
-	}
-
-	Block(float xD, float yD, float zD, float xP, float yP, float zP){
-		xDim = xD;
-		yDim = yD;
-		zDim = zD;
-
-		xPos = xP;
-		yPos = yP;
-		zPos = zP;
-	}
-
-	//Getters, setters are unecessary as blocks shouldn't be teleporting or changing sizes(?)
-	float getXPos(){
-		return xPos;
-	}
-
-	float getYPos(){
-		return yPos;
-	}
-
-	float getZPos(){
-		return zPos;
-	}
-
-	float getXDim(){
-		return xDim;
-	}
-
-	float getYDim(){
-		return yDim;
-	}
-
-	float getZDim(){
-		return zDim;
-	}
-
-	//Functions
-
-	//Draws the block
-	void draw(){
-
-	}
-
-	//Moves the block, should blocks move in set intervals? aka have a sort of grid system
-	//within the map
-	void move(){
-
-	}
-
-};
-
-//The general map that the player and objects are placed in
-//Should the map just be hardcoded?
-class Map {
-	void draw(){
-
-	}
-};
-
-//Responsible for loading the individual puzzlbes
-//Block placement, checking win conditions, etc
-//one puzzle object = one set of block placements
-class Puzzle{
-
-
-	bool checkWin(){
-
-	}
-
-
-};
-
-
-//Keyboard controls
-void keyboard(unsigned char key, int x, int y)
+float ver[8][3] = 
 {
+    {-1.0,-1.0,1.0},
+    {-1.0,1.0,1.0},
+    {1.0,1.0,1.0},
+    {1.0,-1.0,1.0},
+    {-1.0,-1.0,-1.0},
+    {-1.0,1.0,-1.0},
+    {1.0,1.0,-1.0},
+    {1.0,-1.0,-1.0},
+};
 
-	switch (key)
-	{	
-		//Exit program
-		case 'q':
-		case 27:
-			exit (0);
-			break;
-	}
-	glutPostRedisplay();
+GLfloat color[8][3] = 
+{
+    {0.0,0.0,0.0},
+    {1.0,0.0,0.0},
+    {1.0,1.0,0.0},
+    {0.0,1.0,0.0},
+    {0.0,0.0,1.0},
+    {1.0,0.0,1.0},
+    {1.0,1.0,1.0},
+    {0.0,1.0,1.0},
+};
+
+void quad(int a,int b,int c,int d,float scaleX,float scaleY,float scaleZ )
+{
+	int i;
+    glBegin(GL_QUADS);
+    
+    	glColor3fv(color[a]);
+    	glVertex3f(ver[a][0]*scaleX,ver[a][1]*scaleY,ver[a][2]*scaleZ);
+
+    	glColor3fv(color[b]);
+	glVertex3f(ver[b][0]*scaleX,ver[b][1]*scaleY,ver[b][2]*scaleZ);
+
+	glColor3fv(color[c]);
+	glVertex3f(ver[c][0]*scaleX,ver[c][1]*scaleY,ver[c][2]*scaleZ);
+
+	glColor3fv(color[d]);
+	glVertex3f(ver[d][0]*scaleX,ver[d][1]*scaleY,ver[d][2]*scaleZ);
+
+    glEnd();
 }
 
-//Special key entries
-void special(int key, int x, int y)
+void room1()
 {
-	//Move camera
-	switch(key)
-	{
-		case GLUT_KEY_LEFT:
-			//camPos[2]-=0.1;
-			break;
-
-	}
-	glutPostRedisplay();
+    quad(0,3,2,1,5,5,5);
+    quad(2,3,7,6,5,5,5);
+    quad(0,4,7,3,5,5,5);
+    quad(1,2,6,5,5,5,5);
+    quad(4,5,6,7,5,5,5);
+    quad(0,1,5,4,5,5,5);
 }
 
-void init(void)
-{
-	glClearColor(0, 0, 0, 0);
-	glColor3f(1, 1, 1);
+void changeSize(int w, int h) { 
 
+	// Prevent a divide by zero, when window is too short
+	// (you cant make a window of zero width).
+	if (h == 0)
+		h = 1;
+
+	float ratio =  w * 1.0 / h;
+
+	// Use the Projection Matrix
 	glMatrixMode(GL_PROJECTION);
+
+	// Reset Matrix
 	glLoadIdentity();
 
-	gluPerspective(45, 1, 1, 100);
+	// Set the viewport to be the entire window
+	glViewport(0, 0, w, h);
+
+	// Set the correct perspective.
+	gluPerspective(45,ratio,1,100);
+
+	// Get Back to the Modelview
+	glMatrixMode(GL_MODELVIEW);
 }
 
+void renderScene(void) {
 
-// display function - GLUT display callback function 
-void display(void)
-{
-	float origin[3] = {0,0,0};
+
+	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
+
+	// Reset transformations
 	glLoadIdentity();
+	// Set the camera
+	gluLookAt(	0.0f, 0.0f, 10.0f,
+				0.0f, 0.0f,  0.0f,
+				0.0f, 1.0f,  0.0f);
 
-	gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
-	glColor3f(1,1,1);
-
+	glRotatef(angle, 0.0f, 1.0f, 0.0f);
+//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	room1();
+	angle+=0.5f;
 
 	glutSwapBuffers();
 }
 
-// main function - program entry point
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
+	// init GLUT and create window
+	int windowSizeWidth = 1280;
+	int windowSizeHeight = 720;
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-windowSizeWidth)/2,
+                      	   (glutGet(GLUT_SCREEN_HEIGHT)-windowSizeHeight*1.3)/2); //initial window position is centered and slightly up(cuz laptop screen so I dont have to look down)
+	glutInitWindowSize(windowSizeWidth,windowSizeHeight);
+	glutCreateWindow("Unblock3D - 3GC3 Final");
 
-	printf("\nWelcome to our final project!\n");
+	// register callbacks
+	glutDisplayFunc(renderScene);
+	glutReshapeFunc(changeSize);
 
-	glutInit(&argc, argv);		//starts up GLUT
-	
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-	
-	glutInitWindowSize(800, 800);
-	glutInitWindowPosition(100, 100);
-
-	glutCreateWindow("3GC3 Final   John Zhang/Gabriel Lopez/Joseph Manalo");	//creates the window
-	glutDisplayFunc(display);	//registers "display" as the display callback function
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(special);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CW);
 
 	glEnable(GL_DEPTH_TEST);
-	init();
+	// here is the idle func registration
+	glutIdleFunc(renderScene);
 
-	glutMainLoop();				//starts the event loop
+	// enter GLUT event processing loop
+	glutMainLoop();
 
-	return(0);					//return may not be necessary on all compilers
+	return 1;
 }
