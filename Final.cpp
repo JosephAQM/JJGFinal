@@ -61,7 +61,6 @@ void quad(int a,int b,int c,int d,float scaleX,float scaleY,float scaleZ )
 {
 	int i;
 	GLfloat d1[] = { 0.1, 0.1, 0.1, 1.0 };
-	glEnable(GL_COLOR_MATERIAL);
 	//glMaterialfv(GL_FRONT,GL_DIFFUSE,d1);
     glBegin(GL_QUADS);
     //glNormal3f(0,0,1);
@@ -96,20 +95,35 @@ void room1()
     quad(0,1,5,4,10,5,11);
 }
 
-void enable(void) {
+void init(void) {
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CW);
 	glEnable(GL_DEPTH_TEST); //enable the depth testing
+
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
 	glEnable(GL_LIGHTING); //enable the lighting
 	glEnable(GL_LIGHT0); //enable LIGHT0, our Diffuse Light
+
+
+	GLfloat qaAmbientLight[]	= {0.2, 0.2, 0.2, 1.0};
+	GLfloat qaDiffuseLight[]	= {0.8, 0.8, 0.8, 1.0};
+	GLfloat qaSpecularLight[]	= {1.0, 1.0, 1.0, 1.0};
+	glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
+
+	// Set the light position
+	GLfloat qaLightPosition[]	= {.5, .5, 0.0, 1.0};
+	glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
+
 	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH); //set the shader to smooth shader
 }
 
 void renderScene(void) {
-
-
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	enable(); //calls enable functions
 
 	// Reset transformations
 	glLoadIdentity();
@@ -230,15 +244,12 @@ int main(int argc, char **argv) {
                       	   (glutGet(GLUT_SCREEN_HEIGHT)-windowSizeHeight*1.3)/2); //initial window position is centered and slightly up(cuz laptop screen so I dont have to look down)
 	glutInitWindowSize(windowSizeWidth,windowSizeHeight);
 	glutCreateWindow("Unblock3D - 3GC3 Final");
-	
+	init(); //calls enable functions
 
 	// register callbacks
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
 
 	// here is the idle func registration
 	glutIdleFunc(renderScene);
