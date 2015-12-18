@@ -32,7 +32,7 @@ void reshape(int w, int h) {
 
 //-----------------------------------------------------------------------------------------------
 
-//-----------------------------      Classes       -----------------------------------------------
+//----------------------------------------- CLASSES ----------------------------------------------
 
 class Block {
 private:
@@ -85,10 +85,25 @@ public:
 		return length;
 	}
 
+	float getXLength(){
+		if (orient == 'X')
+			return length;
+		else
+			return 1;
+	}
+
+	float getZLength(){
+		if (orient == 'Z')
+			return length;
+		else
+			return 1;
+	}
+
 	//Functions
 	void draw(){
 		glPushMatrix();
 
+		//Move block origin to appropriate location
 		glTranslated(xPos,yPos,zPos);
 		
 		//Change to brown later
@@ -101,12 +116,21 @@ public:
  		else 
  			glScaled(1, 1, length);
 
- 		//Default size 1
-		glutSolidCube(1);
+ 		//Default size 2x2x2 * scaling
+ 		//Size of 2 is equivalent to 1 unit
+		glutSolidCube(2);
 
 		glPopMatrix(); 
 	}
 	
+	//INCOMPLETE, WILL IMPLEMENT LATER
+	bool collisionCheck(Block block1, Block block2){
+		//Origin to origin, assumes both are co-planar on XZ
+		float distance = sqrt(pow(block2.getXPos() - block1.getXPos(), 2) + pow(block2.getZPos() - block1.getZPos(), 2));
+		if (distance <= block2.getXLength() + block1.getXLength())
+			return true;
+		return false;
+	}
 
 	//Move object in specified direction
 	void move(float moveX, float moveY, float moveZ){
@@ -114,7 +138,6 @@ public:
 		yPos += moveY;
 		zPos += moveZ;
 	}
-
 
 	void increaseSize(float changeAmount){
 		length += changeAmount;
@@ -128,6 +151,15 @@ public:
 
 //-----------------------------------------------------------------------------------------------
 
+
+//----------------------------------------------- GLOBALS ---------------------------------------
+
+//Array of objects containing all of the blocks (arbritrary limit of 20)
+Block sceneBlocks[20];
+//Contains whether the blocks are currently being used or not
+bool activeBlocks[20];
+
+//-----------------------------------------------------------------------------------------------
 
 
 
@@ -220,6 +252,14 @@ void init(void) {
 	glShadeModel(GL_SMOOTH); //set the shader to smooth shader
 }
 
+void drawAllBlocks(){
+	for (int i = 0; i < 20; i++){//(sizeof(sceneShapes)/sizeof(*sceneShapes)); i++) {
+		if (activeBlocks[i]) {
+			sceneBlocks[i].draw();
+		}
+	}
+}
+
 void renderScene(void) {
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -245,6 +285,7 @@ void renderScene(void) {
 	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	room1();
+	drawAllBlocks();
 	//angle+=0.5f;
 	
 	glutSwapBuffers();
@@ -358,6 +399,12 @@ int main(int argc, char **argv) {
 	glutPassiveMotionFunc(mouseMovement); //check for mouse movement
 	glutKeyboardFunc(keyboard);
 
+	//                 x,y,z pos length key orient x
+	sceneBlocks[0].set(1.0, -3 , 1.0, 2, false, true);
+	activeBlocks[0] = true;
+
+	sceneBlocks[1].set(-2.0, -3 , -4.0, 3, false, false);
+	activeBlocks[1] = true;
 	// enter GLUT event processing loop
 	glutMainLoop();
 
