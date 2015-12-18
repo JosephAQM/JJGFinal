@@ -32,6 +32,105 @@ void reshape(int w, int h) {
 
 //-----------------------------------------------------------------------------------------------
 
+//-----------------------------      Classes       -----------------------------------------------
+
+class Block {
+private:
+	//Shape location
+	float xPos;
+	float yPos;
+	float zPos;
+
+	//Sizes
+	float length;
+
+	//Orientation of the block, X or Z
+	char orient;
+
+	bool isKeyBlock;
+
+public:
+	//Constructors
+	Block(){
+		xPos = 0;
+		yPos = 0;
+		zPos = 0;
+		isKeyBlock = false;
+	}
+
+	void set(float x, float y, float z, float inputLength, bool isKey, bool orientX){
+		xPos = x;
+		yPos = y;
+		zPos = z;
+		length = inputLength;
+		isKeyBlock = isKey;
+		if (orientX) {orient = 'x';}
+		else {orient = 'z';}
+	}
+
+	//Getters
+	float getXPos(){
+		return xPos;
+	}
+
+	float getYPos(){
+		return yPos;
+	}
+
+	float getZPos(){
+		return zPos;
+	}
+
+	float getLength(){
+		return length;
+	}
+
+	//Functions
+	void draw(){
+		glPushMatrix();
+
+		glTranslated(xPos,yPos,zPos);
+		
+		//Change to brown later
+		if (isKeyBlock) {glColor3d(1, 0, 0);}
+ 		else glColor3d(1, 0.5, 0.5);
+
+ 		//Scale cube to create block in correct oriantaion and length
+ 		if (orient == 'x')
+ 			glScaled(length, 1, 1);
+ 		else 
+ 			glScaled(1, 1, length);
+
+ 		//Default size 1
+		glutSolidCube(1);
+
+		glPopMatrix(); 
+	}
+	
+
+	//Move object in specified direction
+	void move(float moveX, float moveY, float moveZ){
+		xPos += moveX;
+		yPos += moveY;
+		zPos += moveZ;
+	}
+
+
+	void increaseSize(float changeAmount){
+		length += changeAmount;
+	}
+
+	void decreaseSize(float changeAmount){
+		length -= changeAmount;
+	}
+
+};
+
+//-----------------------------------------------------------------------------------------------
+
+
+
+
 //float angle = 0.0f;
 float ver[8][3] = 
 {
