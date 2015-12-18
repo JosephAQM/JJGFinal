@@ -9,7 +9,30 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-float angle = 0.0f;
+//-----------------------------Things for movement-----------------------------------------------
+//angle of rotation
+float xpos = 0, ypos = 0, zpos = 0, xrot = 0, yrot = 0, angle=0.0;
+
+float cRadius = 10.0f; //radius distance from the character
+
+float lastx, lasty; //used to remember previous x and y positions
+
+//positions of the cubes
+float positionz[10];
+float positionx[10];
+
+void reshape(int w, int h) {
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h); //set the viewport to the current window specifications
+	glMatrixMode(GL_PROJECTION); //set the matrix to projection
+
+	glLoadIdentity();
+	gluPerspective(60, (GLfloat)w / (GLfloat)h, 0.1, 100.0); //set the perspective (angle of sight, width, height, , depth)
+	glMatrixMode(GL_MODELVIEW); //set the matrix back to model
+}
+
+//-----------------------------------------------------------------------------------------------
+
+//float angle = 0.0f;
 float ver[8][3] = 
 {
     {-1.0,-1.0,1.0},
@@ -41,16 +64,16 @@ void quad(int a,int b,int c,int d,float scaleX,float scaleY,float scaleZ )
 	glEnable(GL_COLOR_MATERIAL);
 	//glMaterialfv(GL_FRONT,GL_DIFFUSE,d1);
     glBegin(GL_QUADS);
-    
+    //glNormal3f(0,0,1);
     	//glColor3fv(color[a]);
     	glVertex3f(ver[a][0]*scaleX,ver[a][1]*scaleY,ver[a][2]*scaleZ);
-
+//glNormal3f(0,0,1);
     	//glColor3fv(color[b]);
 		glVertex3f(ver[b][0]*scaleX,ver[b][1]*scaleY,ver[b][2]*scaleZ);
-
+//glNormal3f(0,0,1);
 		//glColor3fv(color[c]);
 		glVertex3f(ver[c][0]*scaleX,ver[c][1]*scaleY,ver[c][2]*scaleZ);
-
+//glNormal3f(0,0,1);
 		//glColor3fv(color[d]);
 		glVertex3f(ver[d][0]*scaleX,ver[d][1]*scaleY,ver[d][2]*scaleZ);
 
@@ -71,6 +94,48 @@ void room1()
     quad(4,5,6,7,10,5,11);
     glColor3fv(color[5]);
     quad(0,1,5,4,10,5,11);
+}
+
+void enable(void) {
+	glEnable(GL_DEPTH_TEST); //enable the depth testing
+	glEnable(GL_LIGHTING); //enable the lighting
+	glEnable(GL_LIGHT0); //enable LIGHT0, our Diffuse Light
+	glEnable(GL_COLOR_MATERIAL);
+	glShadeModel(GL_SMOOTH); //set the shader to smooth shader
+}
+
+void renderScene(void) {
+
+
+	// Clear Color and Depth Buffers
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	enable(); //calls enable functions
+
+	// Reset transformations
+	glLoadIdentity();
+
+	//temp character 
+	glTranslatef(0.0f, -1.0f, -cRadius);
+	glRotatef(xrot,1.0,0.0,0.0);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glutSolidCube(1); //Our character to follow
+	//used for character movement
+	glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
+	glTranslated(-xpos,0.0f,-zpos); //translate the screen to the position of our camera
+	glColor3f(1.0f, 1.0f, 1.0f);
+	
+	// Set the camera
+	gluLookAt(	0.0f, 0.0f, 10.0f,
+				0.0f, 0.0f,  0.0f,
+				0.0f, 20.0f,  0.0f);
+
+	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
+	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	room1();
+	//angle+=0.5f;
+	
+	glutSwapBuffers();
+	angle++; //increase the angle
 }
 
 void changeSize(int w, int h) { 
@@ -98,25 +163,61 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void renderScene(void) {
+void keyboard(unsigned char key, int x, int y) {
+	if(key=='q'){ //rotate view up
+	xrot += 1;
+	if(xrot >360) xrot -= 360;
+	}
 
+	if(key=='z'){ //rotate view down
+	xrot -= 1;
+	if(xrot < -360) xrot += 360;
+	}
+	//w,a,s,d movement keys
+	if(key=='w'){
+	float xrotrad, yrotrad;
+	yrotrad = (yrot / 180 * 3.141592654f);
+	xrotrad = (xrot / 180 * 3.141592654f); 
+	xpos += float(sin(yrotrad));
+	zpos -= float(cos(yrotrad));
+	ypos -= float(sin(xrotrad));
+	}
 
-	// Clear Color and Depth Buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if(key=='s'){
+	float xrotrad, yrotrad;
+	yrotrad = (yrot / 180 * 3.141592654f);
+	xrotrad = (xrot / 180 * 3.141592654f); 
+	xpos -= float(sin(yrotrad));
+	zpos += float(cos(yrotrad));
+	ypos += float(sin(xrotrad));
+	}
 
-	// Reset transformations
-	glLoadIdentity();
-	// Set the camera
-	gluLookAt(	0.0f, 0.0f, 10.0f,
-				0.0f, 0.0f,  0.0f,
-				0.0f, 20.0f,  0.0f);
+	if(key=='d'){
+	float yrotrad;
+	yrotrad = (yrot / 180 * 3.141592654f);
+	xpos += float(cos(yrotrad)) * 0.2;
+	zpos += float(sin(yrotrad)) * 0.2;
+	}
 
-	glRotatef(angle, 0.0f, 1.0f, 0.0f);
-//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	room1();
-	angle+=0.5f;
+	if(key=='a'){
+	float yrotrad;
+	yrotrad = (yrot / 180 * 3.141592654f);
+	xpos -= float(cos(yrotrad)) * 0.2;
+	zpos -= float(sin(yrotrad)) * 0.2;
+	}
 
-	glutSwapBuffers();
+	if(key==27){ // esc key to quit
+	exit(0);
+	}
+}
+
+void mouseMovement(int x, int y) {
+	int diffx=x-lastx; //check the difference between the current x and the last x position
+	int diffy=y-lasty; //check the difference between the current y and the last y position
+	lastx=x; //set lastx to the current x position
+	lasty=y; //set lasty to the current y position
+	xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
+	yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
 }
 
 int main(int argc, char **argv) {
@@ -129,7 +230,7 @@ int main(int argc, char **argv) {
                       	   (glutGet(GLUT_SCREEN_HEIGHT)-windowSizeHeight*1.3)/2); //initial window position is centered and slightly up(cuz laptop screen so I dont have to look down)
 	glutInitWindowSize(windowSizeWidth,windowSizeHeight);
 	glutCreateWindow("Unblock3D - 3GC3 Final");
-
+	
 
 	// register callbacks
 	glutDisplayFunc(renderScene);
@@ -139,11 +240,13 @@ int main(int argc, char **argv) {
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	// here is the idle func registration
 	glutIdleFunc(renderScene);
+	
+	//from movement code
+	//glutReshapeFunc(reshape);
+	glutPassiveMotionFunc(mouseMovement); //check for mouse movement
+	glutKeyboardFunc(keyboard);
 
 	// enter GLUT event processing loop
 	glutMainLoop();
