@@ -97,9 +97,9 @@ void renderScene(void) {
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	gluLookAt(	0.0f, 0.0f, 10.0f,
-				0.0f, 0.0f,  0.0f,
-				0.0f, 1.0f,  0.0f);
+	gluLookAt(0.0f, 0.0f, 10.0f,
+		0.0f, 0.0f,  0.0f,
+		0.0f, 1.0f,  0.0f);
 
 	glRotatef(angle, 0.0f, 1.0f, 0.0f);
 //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
