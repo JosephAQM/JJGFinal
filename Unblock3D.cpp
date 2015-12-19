@@ -48,6 +48,7 @@ private:
 	char orient;
 
 	bool isKeyBlock;
+	bool isGrabbed;
 
 public:
 	//Constructors
@@ -56,6 +57,7 @@ public:
 		yPos = 0;
 		zPos = 0;
 		isKeyBlock = false;
+		isGrabbed = false;
 	}
 
 	void set(float x, float y, float z, float inputLength, bool isKey, bool orientX){
@@ -64,6 +66,7 @@ public:
 		zPos = z;
 		length = inputLength;
 		isKeyBlock = isKey;
+		isGrabbed = false;
 		if (orientX) {orient = 'x';}
 		else {orient = 'z';}
 	}
@@ -97,6 +100,10 @@ public:
 			return length;
 		else
 			return 1;
+	}
+
+	char getOrient(){
+		return orient;
 	}
 
 	//Functions
@@ -147,6 +154,18 @@ public:
 		length -= changeAmount;
 	}
 
+	void grab(){
+		isGrabbed = true;
+	}
+
+	void unGrab(){
+		isGrabbed = false;
+	}
+
+	bool getGrabbed(){
+		return isGrabbed;
+	}
+
 };
 
 //-----------------------------------------------------------------------------------------------
@@ -161,7 +180,17 @@ bool activeBlocks[20];
 
 //-----------------------------------------------------------------------------------------------
 
-
+//Loops through block list, and moves the grabbed block(s) depending on its orientation
+void moveGrabbedBlock(float moveX, float moveY, float moveZ){
+	for (int i = 0; i < 20; i++){
+		if (activeBlocks[i] && sceneBlocks[i].getGrabbed()){
+			if (sceneBlocks[i].getOrient() == 'x')
+				sceneBlocks[i].move(moveX, 0, 0);
+			else
+				sceneBlocks[i].move(0,0,moveZ);
+		}
+	}
+}
 
 //float angle = 0.0f;
 float ver[8][3] = 
@@ -335,6 +364,7 @@ void keyboard(unsigned char key, int x, int y) {
 	xpos += float(sin(yrotrad));
 	zpos -= float(cos(yrotrad));
 	ypos -= float(sin(xrotrad));
+	moveGrabbedBlock(float(sin(yrotrad)), -float(cos(yrotrad)), -float(sin(xrotrad)));
 	}
 
 	if(key=='s'){
@@ -344,6 +374,7 @@ void keyboard(unsigned char key, int x, int y) {
 	xpos -= float(sin(yrotrad));
 	zpos += float(cos(yrotrad));
 	ypos += float(sin(xrotrad));
+	moveGrabbedBlock(-float(sin(yrotrad)), float(cos(yrotrad)), float(sin(xrotrad)));
 	}
 
 	if(key=='d'){
@@ -351,6 +382,7 @@ void keyboard(unsigned char key, int x, int y) {
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xpos += float(cos(yrotrad)) * 0.2;
 	zpos += float(sin(yrotrad)) * 0.2;
+	moveGrabbedBlock(float(cos(yrotrad)) * 0.2, 0, float(sin(yrotrad)) * 0.2);
 	}
 
 	if(key=='a'){
@@ -358,6 +390,7 @@ void keyboard(unsigned char key, int x, int y) {
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xpos -= float(cos(yrotrad)) * 0.2;
 	zpos -= float(sin(yrotrad)) * 0.2;
+	moveGrabbedBlock(-float(cos(yrotrad)) * 0.2, 0, -float(sin(yrotrad)) * 0.2);
 	}
 
 	if(key==27){ // esc key to quit
@@ -405,6 +438,8 @@ int main(int argc, char **argv) {
 
 	sceneBlocks[1].set(-2.0, -3 , -4.0, 3, false, false);
 	activeBlocks[1] = true;
+
+	sceneBlocks[0].grab();
 	// enter GLUT event processing loop
 	glutMainLoop();
 
