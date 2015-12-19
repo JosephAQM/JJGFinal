@@ -409,14 +409,14 @@ void changeSize(int w, int h) {
 }
 
 void keyboard(unsigned char key, int x, int y) {
-	if(key=='q'){ //rotate view up
+	if(key=='q'){ //rotate view down
 	xrot += 1;
-	if(xrot >360) xrot -= 360;
+	if(xrot >45) xrot = 45;
 	}
 
-	if(key=='z'){ //rotate view down
+	if(key=='z'){ //rotate view up
 	xrot -= 1;
-	if(xrot < -360) xrot += 360;
+	if(xrot < -30) xrot = -30;
 	}
 	//w,a,s,d movement keys
 	if(key=='w'){
@@ -482,6 +482,18 @@ void mouseMovement(int x, int y) {
 	lasty=y; //set lasty to the current y position
 	xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
 	yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
+	if(diffx < 0){ //limits rotation of camera in the downward direction
+		xrot += 1;
+		if(xrot >45){
+			xrot = 45;
+		}
+	}
+	if(diffx > 0){ //limits rotation of camera in the upward direction
+		xrot -= 1;
+		if(xrot < -30){
+			xrot = -30;
+		}
+	}
 }
 
 int main(int argc, char **argv) {
