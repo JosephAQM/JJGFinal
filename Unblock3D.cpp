@@ -484,25 +484,23 @@ void drawBase(float xp,float yp,float zp,float xr,float yr,float zr,float size){
 		glPopMatrix(); 
 }
 void drawTorches(){
-	glDisable(GL_CULL_FACE);
+	glColor3f(0.98f, 0.625f, 0.12f);
 	sphere.draw(3.5, -2, 10.5);
-	drawBase(3.5,-2.2,10.6,70,0,45,0.4);
 	sphere.draw(-3.5, -2, 10.5);
-	drawBase(-3.5,-2.2,10.6,70,0,45,0.4);
-
 	sphere.draw(3.5, -2, -10.5);
-	drawBase(3.5,-2.2,-10.6,110,0,45,0.4);
 	sphere.draw(-3.5, -2, -10.5);
-	drawBase(-3.5,-2.2,-10.6,110,0,45,0.4);
-
 	sphere.draw(-9.5, -2, 5);
-	drawBase(-9.5,-2.2,5,90,-22,45,0.4);
 	sphere.draw(-9.5, -2, -5);
-	drawBase(-9.5,-2.2,-5,90,-22,45,0.4);
-
 	sphere.draw(9.5, -2, 5);
-	drawBase(9.5,-2.2,5,90,22,45,0.4);
 	sphere.draw(9.5, -2, -5);
+	glColor3f( 0.36f, 0.25f, 0.2f);
+	drawBase(3.5,-2.2,10.6,70,0,45,0.4);
+	drawBase(-3.5,-2.2,10.6,70,0,45,0.4);
+	drawBase(3.5,-2.2,-10.6,110,0,45,0.4);
+	drawBase(-3.5,-2.2,-10.6,110,0,45,0.4);
+	drawBase(-9.5,-2.2,5,90,-22,45,0.4);
+	drawBase(-9.5,-2.2,-5,90,-22,45,0.4);
+	drawBase(9.5,-2.2,5,90,22,45,0.4);
 	drawBase(9.5,-2.2,-5,90,22,45,0.4);
 }
 void room1()
@@ -556,7 +554,7 @@ void drawAllBlocks(){
 }
 
 void renderScene(void) {
-	glEnable(GL_CULL_FACE);
+	
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -580,9 +578,12 @@ void renderScene(void) {
 
 	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	glEnable(GL_CULL_FACE);
 	room1();
-	drawAllBlocks();
+	glDisable(GL_CULL_FACE);
 	drawTorches();
+	drawAllBlocks();
+
 	//TESTING
 	//drawTestPoints();
 	//angle+=0.5f;
