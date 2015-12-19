@@ -43,6 +43,7 @@ private:
 
 	//Sizes
 	float length;
+	float defaultSideLength;
 
 	//Orientation of the block, X or Z
 	char orient;
@@ -65,6 +66,7 @@ public:
 		yPos = y;
 		zPos = z;
 		length = inputLength;
+		defaultSideLength = 2; //Built in scaling for block
 		isKeyBlock = isKey;
 		isGrabbed = false;
 		if (orientX) {orient = 'x';}
@@ -125,17 +127,63 @@ public:
 
  		//Default size 2x2x2 * scaling
  		//Size of 2 is equivalent to 1 unit
-		glutSolidCube(2);
+		glutSolidCube(defaultSideLength);
 
 		glPopMatrix(); 
 	}
 	
-	//INCOMPLETE, WILL IMPLEMENT LATER
-	bool collisionCheck(Block block1, Block block2){
-		//Origin to origin, assumes both are co-planar on XZ
-		float distance = sqrt(pow(block2.getXPos() - block1.getXPos(), 2) + pow(block2.getZPos() - block1.getZPos(), 2));
-		if (distance <= block2.getXLength() + block1.getXLength())
-			return true;
+	//Input block to check collision with, and direction THIS block is moving in (pos 1, neg 1)
+	bool collisionCheck(Block block, int direction, float amount){
+		//Once again, generate points on each end of this block
+		float point1x;
+		float point1z;
+
+		float point2x;
+		float point2z;
+
+		if (orient == 'x'){
+			point1x = xPos + length;
+			point1z = zPos;
+
+			point2x = xPos - length;
+			point2z = zPos;
+		}
+
+		else{
+			point1x = xPos;
+			point1z = zPos + length;
+
+			point2x = xPos;
+			point2z = zPos - length;
+		}
+
+		//To calculate where the block wants to move
+		float moveAmnt = amount * direction;
+
+		//Lol this whole section is so messy
+		//Now check if the generated points enter the other block's space
+		if (orient == 'x'){
+			//Check first point
+			if (((point1x + moveAmnt) < (block.getXPos() + block.getLength())) && ((point1x + moveAmnt) > (block.getXPos() - block.getLength())))
+				if ((point1z < block.getZPos() + 1) && (point1z > block.getZPos() - 1))
+					return true;
+
+			//Check second point
+			if (((point2x + moveAmnt) < (block.getXPos() + block.getLength())) && ((point2x  + moveAmnt) > (block.getXPos() - block.getLength())))
+				if ((point2z < block.getZPos() + 1) && (point2z > block.getZPos() - 1))
+					return true;
+		}
+
+		else if (orient == 'z'){
+			if ((point1x < (block.getXPos() + 1) && (point1x > (block.getXPos() - 1))))
+				if (((point1z + moveAmnt) < block.getZPos() + block.getLength()) && ((point1z + moveAmnt) > block.getZPos() - block.getLength()))
+					return true;
+
+			if ((point2x < (block.getXPos() + 1) && (point2x > (block.getXPos() - 1))))
+				if (((point2z + moveAmnt) < block.getZPos() + block.getLength()) && ((point2z + moveAmnt) > block.getZPos() - block.getLength()))
+					return true;
+		}
+
 		return false;
 	}
 
@@ -178,6 +226,34 @@ Block sceneBlocks[20];
 //Contains whether the blocks are currently being used or not
 bool activeBlocks[20];
 
+//Test coordinates for grabbing mechanic
+float test1x;
+float test1z;
+
+float test2x;
+float test2z;
+
+void drawTestPoints(){
+	glPushMatrix();
+
+	glColor3d(1, 0, 0);
+	glTranslated(test1x,1.5,test1z);
+
+	glutSolidCube(1);
+
+	glPopMatrix(); 
+
+	//==============
+	glPushMatrix();
+
+	glColor3d(1, 0, 0);
+	glTranslated(test2x,1.5,test2z);
+
+	glutSolidCube(1);
+
+	glPopMatrix(); 
+}
+
 //-----------------------------------------------------------------------------------------------
 
 //Grab block closest to given x,z coords
@@ -214,7 +290,14 @@ void grabNearestBlock(float x, float z){
 			//Calculate distance between the character and each point
 			float distance1 = sqrt(pow(point1x - x, 2) + pow(point1z - z, 2));
 			float distance2 = sqrt(pow(point2x - x, 2) + pow(point2z - z, 2));
-			printf("Block #: %i  Distance1: %f\n", i, distance1);
+
+			// //TESTING
+			// test1x = point1x;
+			// test1z = point1z;
+			// test2x = point2x;
+			// test2z = point2z;
+
+			printf("Block #%i  Distance1: %f\n", i, distance1);
 			printf("Block #%i  Distance2: %f\n", i, distance2);
 
 			//Check if either of the two points are closer than any previous block points
@@ -242,14 +325,30 @@ void ungrabAll(){
 	}
 }
 
+bool checkBlockCollisions(int direction, float amount){
+	for (int i = 0; i < 20; i++){
+		if (activeBlocks[i]){
+			for (int j = 0; j < 20; j++)
+				if (activeBlocks[j] && sceneBlocks[i].collisionCheck(sceneBlocks[j], direction, amount)){
+					printf("Collision!\n");
+					return true;
+				}
+		}
+	}
+}
+
 //Loops through block list, and moves the grabbed block(s) depending on its orientation
 void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 	for (int i = 0; i < 20; i++){
-		if (activeBlocks[i] && sceneBlocks[i].getGrabbed()){
-			if (sceneBlocks[i].getOrient() == 'x')
-				sceneBlocks[i].move(moveX, 0, 0);
-			else
-				sceneBlocks[i].move(0,0,moveZ);
+		if (activeBlocks[i] && sceneBlocks[i].getGrabbed() ){
+			if ((sceneBlocks[i].getOrient() == 'x')){
+				if ((moveX > 0 && !checkBlockCollisions(1, moveX)) || ((moveX < 0) && !checkBlockCollisions(-1, moveX))){
+					sceneBlocks[i].move(moveX, 0, 0);
+				}
+			}
+			else 
+				if ((moveZ > 0 && !checkBlockCollisions(1, moveZ)) || ((moveZ < 0) && !checkBlockCollisions(-1, moveZ)))
+					sceneBlocks[i].move(0,0,moveZ);
 		}
 	}
 }
@@ -377,6 +476,9 @@ void renderScene(void) {
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	room1();
 	drawAllBlocks();
+
+	//TESTING
+	//drawTestPoints();
 	//angle+=0.5f;
 	
 	glutSwapBuffers();
@@ -465,7 +567,7 @@ void mouse(int btn, int state, int x, int y){
 		case GLUT_LEFT_BUTTON:
 			if(state==GLUT_DOWN){
 				ungrabAll();
-				grabNearestBlock(xpos, zpos);
+				grabNearestBlock(xpos, zpos); //CHARACTER POSITION??
 				}
 			else if(state==GLUT_UP){
 				ungrabAll();
@@ -524,7 +626,7 @@ int main(int argc, char **argv) {
 
 
 	//                 x,y,z pos length key orient x
-	sceneBlocks[0].set(1.0, -3 , 1.0, 2, false, true);
+	sceneBlocks[0].set(3.0, -3 , 3.0, 2, false, true);
 	activeBlocks[0] = true;
 
 	sceneBlocks[1].set(-2.0, -3 , -4.0, 3, false, false);
