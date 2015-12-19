@@ -180,6 +180,68 @@ bool activeBlocks[20];
 
 //-----------------------------------------------------------------------------------------------
 
+//Grab block closest to given x,z coords
+void grabNearestBlock(float x, float z){
+	int closestBlock = 0;
+	float distanceToClosest = 99999; //Big ass number
+
+	for (int i = 0; i < 20; i++){
+		if (activeBlocks[i]){
+			//Calculates a point on each end of the block (depends on orientation)
+			float point1x;
+			float point1z;
+
+			float point2x;
+			float point2z;
+
+			//Can be cleaner
+			if (sceneBlocks[i].getOrient() == 'x'){
+				point1x = sceneBlocks[i].getXPos() + sceneBlocks[i].getLength();
+				point1z = sceneBlocks[i].getZPos();
+
+				point2x = sceneBlocks[i].getXPos() - sceneBlocks[i].getLength();
+				point2z = sceneBlocks[i].getZPos();
+			}
+
+			else{
+				point1x = sceneBlocks[i].getXPos();
+				point1z = sceneBlocks[i].getZPos() + sceneBlocks[i].getLength();
+
+				point2x = sceneBlocks[i].getXPos();
+				point2z = sceneBlocks[i].getZPos() - sceneBlocks[i].getLength();
+			}
+
+			//Calculate distance between the character and each point
+			float distance1 = sqrt(pow(point1x - x, 2) + pow(point1z - z, 2));
+			float distance2 = sqrt(pow(point2x - x, 2) + pow(point2z - z, 2));
+			printf("Block #: %i  Distance1: %f\n", i, distance1);
+			printf("Block #%i  Distance2: %f\n", i, distance2);
+
+			//Check if either of the two points are closer than any previous block points
+			if (distance1 < distanceToClosest){
+				closestBlock = i;
+				distanceToClosest = distance1;
+			}
+			if (distance2 < distanceToClosest){
+				closestBlock = i;
+				distanceToClosest = distance2;				
+			}
+
+		}
+	}
+
+	printf("Grabbed %i\n", closestBlock);
+	sceneBlocks[closestBlock].grab();
+}
+
+void ungrabAll(){
+	for (int i = 0; i < 20; i++){
+		if (activeBlocks[i]){
+			sceneBlocks[i].unGrab();
+		}
+	}
+}
+
 //Loops through block list, and moves the grabbed block(s) depending on its orientation
 void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 	for (int i = 0; i < 20; i++){
@@ -398,6 +460,21 @@ void keyboard(unsigned char key, int x, int y) {
 	}
 }
 
+void mouse(int btn, int state, int x, int y){
+	switch(btn){
+		case GLUT_LEFT_BUTTON:
+			if(state==GLUT_DOWN){
+				ungrabAll();
+				grabNearestBlock(xpos, zpos);
+				}
+			else if(state==GLUT_UP){
+				ungrabAll();
+			}
+			break;
+
+	}
+}
+
 void mouseMovement(int x, int y) {
 	int diffx=x-lastx; //check the difference between the current x and the last x position
 	int diffy=y-lasty; //check the difference between the current y and the last y position
@@ -431,6 +508,8 @@ int main(int argc, char **argv) {
 	//glutReshapeFunc(reshape);
 	glutPassiveMotionFunc(mouseMovement); //check for mouse movement
 	glutKeyboardFunc(keyboard);
+	glutMouseFunc(mouse);
+
 
 	//                 x,y,z pos length key orient x
 	sceneBlocks[0].set(1.0, -3 , 1.0, 2, false, true);
@@ -439,7 +518,7 @@ int main(int argc, char **argv) {
 	sceneBlocks[1].set(-2.0, -3 , -4.0, 3, false, false);
 	activeBlocks[1] = true;
 
-	sceneBlocks[0].grab();
+	//sceneBlocks[0].grab();
 	// enter GLUT event processing loop
 	glutMainLoop();
 
