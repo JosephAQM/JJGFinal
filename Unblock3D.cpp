@@ -133,7 +133,7 @@ public:
 	}
 	
 	//Input block to check collision with, and direction THIS block is moving in (pos 1, neg 1)
-	bool collisionCheck(Block block, int direction, float amount){
+	bool collisionCheck(Block block, float amount){
 		//Once again, generate points on each end of this block
 		float point1x;
 		float point1z;
@@ -158,29 +158,30 @@ public:
 		}
 
 		//To calculate where the block wants to move
-		float moveAmnt = amount * direction;
-
+		float moveAmnt = amount;
+		printf("Move:%f\n", amount);
+		float blockWidth = 0;
 		//Lol this whole section is so messy
 		//Now check if the generated points enter the other block's space
 		if (orient == 'x'){
 			//Check first point
 			if (((point1x + moveAmnt) < (block.getXPos() + block.getLength())) && ((point1x + moveAmnt) > (block.getXPos() - block.getLength())))
-				if ((point1z < block.getZPos() + 1) && (point1z > block.getZPos() - 1))
+				if ((point1z < block.getZPos() + blockWidth) && (point1z > block.getZPos() - blockWidth))
 					return true;
 
 			//Check second point
 			if (((point2x + moveAmnt) < (block.getXPos() + block.getLength())) && ((point2x  + moveAmnt) > (block.getXPos() - block.getLength())))
-				if ((point2z < block.getZPos() + 1) && (point2z > block.getZPos() - 1))
+				if ((point2z < block.getZPos() + blockWidth) && (point2z > block.getZPos() - blockWidth))
 					return true;
 		}
 
 		else if (orient == 'z'){
-			if ((point1x < (block.getXPos() + 1) && (point1x > (block.getXPos() - 1))))
-				if (((point1z + moveAmnt) < block.getZPos() + block.getLength()) && ((point1z + moveAmnt) > block.getZPos() - block.getLength()))
+			if ((point1x < (block.getXPos() + blockWidth) && (point1x > (block.getXPos() - blockWidth))))
+				if (((point1z + moveAmnt) < (block.getZPos() + block.getLength())) && ((point1z + moveAmnt) > (block.getZPos() - block.getLength())))
 					return true;
 
-			if ((point2x < (block.getXPos() + 1) && (point2x > (block.getXPos() - 1))))
-				if (((point2z + moveAmnt) < block.getZPos() + block.getLength()) && ((point2z + moveAmnt) > block.getZPos() - block.getLength()))
+			if ((point2x < (block.getXPos() + blockWidth) && (point2x > (block.getXPos() - blockWidth))))
+				if (((point2z + moveAmnt) < (block.getZPos() + block.getLength())) && ((point2z + moveAmnt) > (block.getZPos() - block.getLength())))
 					return true;
 		}
 
@@ -325,11 +326,11 @@ void ungrabAll(){
 	}
 }
 
-bool checkBlockCollisions(int direction, float amount){
+bool checkBlockCollisions(float amount){
 	for (int i = 0; i < 20; i++){
 		if (activeBlocks[i]){
 			for (int j = 0; j < 20; j++)
-				if (activeBlocks[j] && sceneBlocks[i].collisionCheck(sceneBlocks[j], direction, amount)){
+				if (activeBlocks[j] && sceneBlocks[i].collisionCheck(sceneBlocks[j], amount)){
 					printf("Collision!\n");
 					return true;
 				}
@@ -342,12 +343,12 @@ void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 	for (int i = 0; i < 20; i++){
 		if (activeBlocks[i] && sceneBlocks[i].getGrabbed() ){
 			if ((sceneBlocks[i].getOrient() == 'x')){
-				if ((moveX > 0 && !checkBlockCollisions(1, moveX)) || ((moveX < 0) && !checkBlockCollisions(-1, moveX))){
+				if ((moveX > 0 && !checkBlockCollisions(moveX)) || ((moveX < 0) && !checkBlockCollisions(moveX))){
 					sceneBlocks[i].move(moveX, 0, 0);
 				}
 			}
 			else 
-				if ((moveZ > 0 && !checkBlockCollisions(1, moveZ)) || ((moveZ < 0) && !checkBlockCollisions(-1, moveZ)))
+				if ((moveZ > 0 && !checkBlockCollisions(moveZ)) || ((moveZ < 0) && !checkBlockCollisions(moveX)))
 					sceneBlocks[i].move(0,0,moveZ);
 		}
 	}
@@ -626,10 +627,10 @@ int main(int argc, char **argv) {
 
 
 	//                 x,y,z pos length key orient x
-	sceneBlocks[0].set(3.0, -3 , 3.0, 2, false, true);
+	sceneBlocks[0].set(5.0, -3 , 3.0, 2, false, true);
 	activeBlocks[0] = true;
 
-	sceneBlocks[1].set(-2.0, -3 , -4.0, 3, false, false);
+	sceneBlocks[1].set(-5.0, -3 , -4.0, 3, false, false);
 	activeBlocks[1] = true;
 
 	//sceneBlocks[0].grab();
