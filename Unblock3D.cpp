@@ -418,7 +418,29 @@ void clearBlocks(){
 }
 
 void generateLevel(int level){
-	if (level == 1){
+	if (level ==1){
+		sceneBlocks[0].set(-6.8, -4 , 0, 2, true, true);
+		sceneBlocks[1].set(-7.8, -4 , 4, 3, false, false);
+		sceneBlocks[2].set(-4.7, -4 , 6, 2, false, true);
+		sceneBlocks[3].set(-3.7, -4 , -2, 3, false, false);
+		sceneBlocks[4].set(0.4, -4 , -4, 3, false, true);
+		sceneBlocks[5].set(-2.7, -4 , 2.1, 2, false, true);
+		sceneBlocks[6].set(0.4, -4 , 5.1, 2, false, false);
+		sceneBlocks[7].set(2.5, -4 , 4.1, 3, false, false);
+
+
+
+
+
+
+
+
+		for (int i = 0; i < 8; i++)
+			activeBlocks[i] = true;
+
+	}
+
+	else if (level == 2){
 		//x = horizontal, z vertical, 0,0 is middle, -7,-7 is top left (all relative to initial camera)
 		//                 x    y    z  length  key     ox
 		sceneBlocks[0].set(-7, -4 , -7, 2, false, false);
