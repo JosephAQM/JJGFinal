@@ -422,7 +422,7 @@ int rayCasting(int mouseX, int mouseY){
 	//Calculate slopes for ray
 
 	float wtfX = xpos+0.1;
-	float wtfY = ypos-4;
+	float wtfY = -4;
 	float wtfZ = zpos+5;
 
 	deltaX = (worldX - wtfX);
@@ -455,55 +455,48 @@ int rayCasting(int mouseX, int mouseY){
 
 
 //Grab block closest to given x,z coords
-void grabNearestBlock(float x, float z){
-	int closestBlock = 0;
-	float distanceToClosest = 99999; //Big ass number
+void grabBlock(float x, float z, int mouseY, int mouseX){
 
-	for (int i = 0; i < 20; i++){
-		if (activeBlocks[i]){
-			//Calculates a point on each end of the block (depends on orientation)
-			float point1x;
-			float point1z;
+	int toSelect = rayCasting(mouseX, mouseY);
 
-			float point2x;
-			float point2z;
+	printf("%i\n",toSelect);
 
-			//Can be cleaner
-			if (sceneBlocks[i].getOrient() == 'x'){
-				point1x = sceneBlocks[i].getXPos() + sceneBlocks[i].getLength();
-				point1z = sceneBlocks[i].getZPos();
+	if (activeBlocks[toSelect]){
+		//Calculates a point on each end of the block (depends on orientation)
+		float point1x;
+		float point1z;
 
-				point2x = sceneBlocks[i].getXPos() - sceneBlocks[i].getLength();
-				point2z = sceneBlocks[i].getZPos();
-			}
+		float point2x;
+		float point2z;
 
-			else{
-				point1x = sceneBlocks[i].getXPos();
-				point1z = sceneBlocks[i].getZPos() + sceneBlocks[i].getLength();
+		//Can be cleaner
+		if (sceneBlocks[toSelect].getOrient() == 'x'){
+			point1x = sceneBlocks[toSelect].getXPos() + sceneBlocks[toSelect].getLength();
+			point1z = sceneBlocks[toSelect].getZPos();
 
-				point2x = sceneBlocks[i].getXPos();
-				point2z = sceneBlocks[i].getZPos() - sceneBlocks[i].getLength();
-			}
-
-			//Calculate distance between the character and each point
-			float distance1 = sqrt(pow(point1x - x, 2) + pow(point1z - z, 2));
-			float distance2 = sqrt(pow(point2x - x, 2) + pow(point2z - z, 2));
-
-			//Check if either of the two points are closer than any previous block points
-			if (distance1 < distanceToClosest){
-				closestBlock = i;
-				distanceToClosest = distance1;
-			}
-			if (distance2 < distanceToClosest){
-				closestBlock = i;
-				distanceToClosest = distance2;				
-			}
-
+			point2x = sceneBlocks[toSelect].getXPos() - sceneBlocks[toSelect].getLength();
+			point2z = sceneBlocks[toSelect].getZPos();
 		}
-	}
 
-	printf("Grabbed %i\n", closestBlock);
-	sceneBlocks[closestBlock].grab();
+		else{
+			point1x = sceneBlocks[toSelect].getXPos();
+			point1z = sceneBlocks[toSelect].getZPos() + sceneBlocks[toSelect].getLength();
+
+			point2x = sceneBlocks[toSelect].getXPos();
+			point2z = sceneBlocks[toSelect].getZPos() - sceneBlocks[toSelect].getLength();
+		}
+
+		//Calculate distance between the character and each point
+		float distance1 = sqrt(pow(point1x - x, 2) + pow(point1z - z, 2));
+		float distance2 = sqrt(pow(point2x - x, 2) + pow(point2z - z, 2));
+
+		//Check if either of the two points are closer than any previous block points
+		if (distance1 < 3 || distance2 < 3){
+			printf("Grabbed %i\n", toSelect);
+			sceneBlocks[toSelect].grab();
+			grabbing = true;
+		}
+	}	
 }
 
 void ungrabAll(){
@@ -916,12 +909,8 @@ void mouse(int btn, int state, int x, int y){
 		case GLUT_LEFT_BUTTON:
 			if(state==GLUT_DOWN){
 				ungrabAll();
-				grabbing = true;
-				
-				grabNearestBlock(xpos+0.1, zpos+5); //CHARACTER POSITION??
-				int toSelect = rayCasting(x, y);
+				grabBlock(xpos+0.1, zpos+5,x,y); //CHARACTER POSITION??
 
-				printf("%i\n",toSelect);
 				}
 			else if(state==GLUT_UP){
 				ungrabAll();
