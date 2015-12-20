@@ -126,7 +126,7 @@ public:
 		
 		//Change to brown later
 		if (isKeyBlock) {glColor3d(1, 0, 0);}
- 		else glColor3d(0.5, 0.5, 0.5);
+ 		else glColor3d(1, 0.5, 0);
 
  		//Scale cube to create block in correct oriantaion and length
  		if (orient == 'x')
@@ -217,6 +217,10 @@ public:
 		return isGrabbed;
 	}
 
+	bool isKey(){
+		return isKeyBlock;
+	}
+
 };
 
 class SolidSphere
@@ -303,8 +307,6 @@ bool grabbing = false;
 float test1x;
 float test1z;
 
-float test2x;
-float test2z;
 int windowSizeWidth = 1280;
 int windowSizeHeight = 720;
 
@@ -314,6 +316,19 @@ int width, height, max;
 
 
 //-----------------------------------------------------------------------------------------------
+
+void drawTestPoint(int X, int Z){
+	glPushMatrix();
+
+	//Move block origin to appropriate location
+	glTranslated(X,-4,Z);
+
+	{glColor3d(1, 0, 0);}
+
+	glutSolidCube(0.5);
+
+	glPopMatrix(); 
+}
 
 //Grab block closest to given x,z coords
 void grabNearestBlock(float x, float z){
@@ -410,6 +425,16 @@ void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 void clearBlocks(){
 	for (int i = 0; i < 20; i++){
 		activeBlocks[i] = false;
+	}
+}
+
+bool checkWin(){
+	for (int i = 0; i < 20; i++){
+		if(activeBlocks[i] && sceneBlocks[i].isKey()){
+			if (sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() > 12){
+				return true;
+			}
+		}
 	}
 }
 
@@ -642,9 +667,11 @@ void renderScene(void) {
 	glColor3f(1.0f, 1.0f, 1.0f);
 	
 	// Set the camera
-	gluLookAt(	0.0f, 0.0f, 10.0f,
-				0.0f, 0.0f,  0.0f,
+	gluLookAt(	0.0f, -4.0f, 5.0f,
+				0.0f, -4.0f,  0.0f,
 				0.0f, 20.0f,  0.0f);
+
+
 
 	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -667,7 +694,7 @@ void renderScene(void) {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	//angle+=0.5f;
-	
+	//drawTestPoint(test1x, test1z);
 	glutSwapBuffers();
 	angle++; //increase the angle
 }
@@ -712,12 +739,12 @@ void keyboard(unsigned char key, int x, int y) {
 	float xrotrad, yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xrotrad = (xrot / 180 * 3.141592654f); 
-	moveGrabbedBlock(float(sin(yrotrad)), -float(cos(yrotrad)), -float(sin(xrotrad)));
+	moveGrabbedBlock(float(sin(yrotrad) * 0.3), -float(cos(yrotrad) * 0.3), -float(sin(xrotrad)) * 0.3);
 
 	if (!grabbing){
-		xpos += float(sin(yrotrad));
-		zpos -= float(cos(yrotrad));
-		ypos -= float(sin(xrotrad));
+		xpos += float(sin(yrotrad)) * 0.3;
+		zpos -= float(cos(yrotrad)) * 0.3;
+		ypos -= float(sin(xrotrad)) * 0.3;
 		}
 	}
 
@@ -725,22 +752,22 @@ void keyboard(unsigned char key, int x, int y) {
 	float xrotrad, yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xrotrad = (xrot / 180 * 3.141592654f); 
-	moveGrabbedBlock(-float(sin(yrotrad)), float(cos(yrotrad)), float(sin(xrotrad)));
+	moveGrabbedBlock(-float(sin(yrotrad) * 0.3), float(cos(yrotrad) * 0.3), float(sin(xrotrad)) * 0.3);
 	if (!grabbing){
-		xpos -= float(sin(yrotrad));
-		zpos += float(cos(yrotrad));
-		ypos += float(sin(xrotrad));
+		xpos -= float(sin(yrotrad)) * 0.3;
+		zpos += float(cos(yrotrad)) * 0.3;
+		ypos += float(sin(xrotrad)) * 0.3;
 	}
 	}
 
 	if(key=='d'){
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
-	moveGrabbedBlock(float(cos(yrotrad)) * 0.2, 0, float(sin(yrotrad)) * 0.2);
+	moveGrabbedBlock(float(cos(yrotrad)) * 0.3, 0, float(sin(yrotrad)) * 0.3);
 
 	if (!grabbing){
-		xpos += float(cos(yrotrad)) * 0.2;
-		zpos += float(sin(yrotrad)) * 0.2;
+		xpos += float(cos(yrotrad)) * 0.3;
+		zpos += float(sin(yrotrad)) * 0.3;
 	}
 	
 	}
@@ -748,10 +775,10 @@ void keyboard(unsigned char key, int x, int y) {
 	if(key=='a'){
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
-	moveGrabbedBlock(-float(cos(yrotrad)) * 0.2, 0, -float(sin(yrotrad)) * 0.2);
+	moveGrabbedBlock(-float(cos(yrotrad)) * 0.3, 0, -float(sin(yrotrad)) * 0.3);
 	if (!grabbing){
-		xpos -= float(cos(yrotrad)) * 0.2;
-		zpos -= float(sin(yrotrad)) * 0.2;
+		xpos -= float(cos(yrotrad)) * 0.3;
+		zpos -= float(sin(yrotrad)) * 0.3;
 	}
 	}
 
@@ -766,7 +793,11 @@ void mouse(int btn, int state, int x, int y){
 			if(state==GLUT_DOWN){
 				ungrabAll();
 				grabbing = true;
-				grabNearestBlock(xpos, zpos+cRadius); //CHARACTER POSITION??
+				//0.0f, -4.0f, 5.0f,
+				
+				grabNearestBlock(xpos+0.1, zpos+5); //CHARACTER POSITION??
+
+				printf("%f,%f\n",xpos, zpos);
 				}
 			else if(state==GLUT_UP){
 				ungrabAll();
