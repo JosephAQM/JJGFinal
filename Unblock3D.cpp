@@ -182,6 +182,9 @@ public:
 			z2length = block.getLength()/2.0;
 	   }
 
+	   if (block.getOrient() == orient){
+	   		return false;
+	   }
 	    return (((x1 - x1length) <= (x2 + x2length)) && ((x1 + x1length) >= (x2 - x2length)) &&
       ((z1 + z1length) >= (z2 - z2length)) && ((z1 - z1length) <= (z2 + z2length)));
 			
@@ -294,6 +297,8 @@ Block sceneBlocks[20];
 //Contains whether the blocks are currently being used or not
 bool activeBlocks[20];
 
+bool grabbing = false;
+
 //Test coordinates for grabbing mechanic
 float test1x;
 float test1z;
@@ -389,11 +394,15 @@ void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 			if ((sceneBlocks[i].getOrient() == 'x')){
 				if (((moveX > 0) && !checkBlockCollisions(moveX)) || ((moveX < 0) && !checkBlockCollisions(moveX))){
 					sceneBlocks[i].move(moveX, 0, 0);
+					xpos+=moveX;
+
 				}
 			}
 			else 
-				if (((moveZ > 0) && !checkBlockCollisions(moveZ)) || ((moveZ < 0) && !checkBlockCollisions(moveX)))
+				if (((moveZ > 0) && !checkBlockCollisions(moveZ)) || ((moveZ < 0) && !checkBlockCollisions(moveX))){
 					sceneBlocks[i].move(0,0,moveZ);
+					zpos+=moveZ;
+				}
 		}
 	}
 }
@@ -703,36 +712,47 @@ void keyboard(unsigned char key, int x, int y) {
 	float xrotrad, yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xrotrad = (xrot / 180 * 3.141592654f); 
-	xpos += float(sin(yrotrad));
-	zpos -= float(cos(yrotrad));
-	ypos -= float(sin(xrotrad));
 	moveGrabbedBlock(float(sin(yrotrad)), -float(cos(yrotrad)), -float(sin(xrotrad)));
+
+	if (!grabbing){
+		xpos += float(sin(yrotrad));
+		zpos -= float(cos(yrotrad));
+		ypos -= float(sin(xrotrad));
+		}
 	}
 
 	if(key=='s'){
 	float xrotrad, yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xrotrad = (xrot / 180 * 3.141592654f); 
-	xpos -= float(sin(yrotrad));
-	zpos += float(cos(yrotrad));
-	ypos += float(sin(xrotrad));
 	moveGrabbedBlock(-float(sin(yrotrad)), float(cos(yrotrad)), float(sin(xrotrad)));
+	if (!grabbing){
+		xpos -= float(sin(yrotrad));
+		zpos += float(cos(yrotrad));
+		ypos += float(sin(xrotrad));
+	}
 	}
 
 	if(key=='d'){
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
-	xpos += float(cos(yrotrad)) * 0.2;
-	zpos += float(sin(yrotrad)) * 0.2;
 	moveGrabbedBlock(float(cos(yrotrad)) * 0.2, 0, float(sin(yrotrad)) * 0.2);
+
+	if (!grabbing){
+		xpos += float(cos(yrotrad)) * 0.2;
+		zpos += float(sin(yrotrad)) * 0.2;
+	}
+	
 	}
 
 	if(key=='a'){
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
-	xpos -= float(cos(yrotrad)) * 0.2;
-	zpos -= float(sin(yrotrad)) * 0.2;
 	moveGrabbedBlock(-float(cos(yrotrad)) * 0.2, 0, -float(sin(yrotrad)) * 0.2);
+	if (!grabbing){
+		xpos -= float(cos(yrotrad)) * 0.2;
+		zpos -= float(sin(yrotrad)) * 0.2;
+	}
 	}
 
 	if(key==27){ // esc key to quit
@@ -745,10 +765,12 @@ void mouse(int btn, int state, int x, int y){
 		case GLUT_LEFT_BUTTON:
 			if(state==GLUT_DOWN){
 				ungrabAll();
+				grabbing = true;
 				grabNearestBlock(xpos, zpos+cRadius); //CHARACTER POSITION??
 				}
 			else if(state==GLUT_UP){
 				ungrabAll();
+				grabbing = false;
 			}
 			break;
 
