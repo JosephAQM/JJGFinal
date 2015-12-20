@@ -650,20 +650,33 @@ void drawTorches(){
 	drawBase(9.5,-2.2,5,90,22,45,0.4);
 	drawBase(9.5,-2.2,-5,90,22,45,0.4);
 }
-void room1()
+void room1()//relative to spawn x axis left and right , z axis is forward and back
 {
+	float m_amb[] = {0.33, 0.22, 0.03, 1.0};
+	float m_dif[] = {0.80, 0.80, 0.90, 1.0};
+	float m_spec[] = {0.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50);
     glColor3f(0.5,0.5,0.5);
-    quad(0,3,2,1,10,5,11);
+	glNormal3f(0.0f,0.0f,-1.0f);
+    quad(0,3,2,1,10,5,11);//wall behind where you spawn
     //glColor3fv(color[1]);
-    quad(2,3,7,6,10,5,11);
+	glNormal3f(-1.0f,0.0f,0.0f);
+    quad(2,3,7,6,10,5,11);//wall to the right relative to spawn
     //glColor3fv(color[2]);
-    quad(0,4,7,3,10,5,11);
+	glNormal3f(0.0f,1.0f,0.0f);
+    quad(0,4,7,3,10,5,11);//floor
     //glColor3fv(color[3]);
-    quad(1,2,6,5,10,5,11);
+	glNormal3f(0.0f,-1.0f,0.0f);
+    quad(1,2,6,5,10,5,11);//ceiling
     //glColor3fv(color[4]);
-    quad(4,5,6,7,10,5,11);
+	glNormal3f(0.0f,0.0f,1.0f);
+    quad(4,5,6,7,10,5,11);//front wall relative to spawn
     //glColor3fv(color[5]);
-    quad(0,1,5,4,10,5,11);
+	glNormal3f(1.0f,0.0f,0.0f);
+    quad(0,1,5,4,10,5,11);//left wall relative to spawn
 }
 
 /* LoadPPM -- loads the specified ppm file, and returns the image data as a GLubyte 
