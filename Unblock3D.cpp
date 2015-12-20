@@ -473,37 +473,19 @@ float ver[8][3] =
     {1.0,-1.0,-1.0},
 };
 
-GLfloat color[8][3] = 
-{
-    {0.0,0.0,0.0},
-    {1.0,0.0,0.0},
-    {1.0,1.0,0.0},
-    {0.0,1.0,0.0},
-    {0.0,0.0,1.0},
-    {1.0,0.0,1.0},
-    {1.0,1.0,1.0},
-    {0.0,1.0,1.0},
-};
+
 
 void quad(int a,int b,int c,int d,float scaleX,float scaleY,float scaleZ )
 {
-	int i;
-	GLfloat d1[] = { 0.1, 0.1, 0.1, 1.0 };
-	//glMaterialfv(GL_FRONT,GL_DIFFUSE,d1);
     glBegin(GL_QUADS);
-    //glNormal3f(0,0,1);
-    	//glColor3fv(color[a]);
-    	glVertex3f(ver[a][0]*scaleX,ver[a][1]*scaleY,ver[a][2]*scaleZ);
-//glNormal3f(0,0,1);
-    	//glColor3fv(color[b]);
-		glVertex3f(ver[b][0]*scaleX,ver[b][1]*scaleY,ver[b][2]*scaleZ);
-//glNormal3f(0,0,1);
-		//glColor3fv(color[c]);
-		glVertex3f(ver[c][0]*scaleX,ver[c][1]*scaleY,ver[c][2]*scaleZ);
-//glNormal3f(0,0,1);
-		//glColor3fv(color[d]);
-		glVertex3f(ver[d][0]*scaleX,ver[d][1]*scaleY,ver[d][2]*scaleZ);
-
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3f(ver[a][0]*scaleX,ver[a][1]*scaleY,ver[a][2]*scaleZ);
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3f(ver[b][0]*scaleX,ver[b][1]*scaleY,ver[b][2]*scaleZ);
+        glTexCoord2f(1.0f, 1.0f);
+        glVertex3f(ver[c][0]*scaleX,ver[c][1]*scaleY,ver[c][2]*scaleZ);
+        glTexCoord2f(0.0f, 1.0f);
+        glVertex3f(ver[d][0]*scaleX,ver[d][1]*scaleY,ver[d][2]*scaleZ);
     glEnd();
 }
 void drawBase(float xp,float yp,float zp,float xr,float yr,float zr,float size){
@@ -539,17 +521,17 @@ void drawTorches(){
 }
 void room1()
 {
-	glColor3fv(color[6]);
+    glColor3f(0.5,0.5,0.5);
     quad(0,3,2,1,10,5,11);
-    glColor3fv(color[1]);
+    //glColor3fv(color[1]);
     quad(2,3,7,6,10,5,11);
- 	glColor3fv(color[2]);
+    //glColor3fv(color[2]);
     quad(0,4,7,3,10,5,11);
-    glColor3fv(color[3]);
+    //glColor3fv(color[3]);
     quad(1,2,6,5,10,5,11);
-    glColor3fv(color[4]);
+    //glColor3fv(color[4]);
     quad(4,5,6,7,10,5,11);
-    glColor3fv(color[5]);
+    //glColor3fv(color[5]);
     quad(0,1,5,4,10,5,11);
 }
 
@@ -637,10 +619,10 @@ void init(void) {
 	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH); //set the shader to smooth shader
 	
-	glEnable(GL_TEXTURE_2D); //enable texture mapping in opengl
+	
 
 	//load specified ppm file for use as texture
-	tex = LoadPPM("marble.ppm", &width, &height, &max);
+	tex = LoadPPM("bricks2.ppm", &width, &height, &max);
 }
 
 void drawAllBlocks(){
@@ -678,8 +660,10 @@ void renderScene(void) {
 	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_TEXTURE_2D);
 	room1();
 	glDisable(GL_CULL_FACE);
+	glDisable(GL_TEXTURE_2D);
 	drawTorches();
 	drawAllBlocks();
 	//--------------------------------------set texture------------------------------------
