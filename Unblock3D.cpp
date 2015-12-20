@@ -522,7 +522,7 @@ void room1()
 }
 
 void init(void) {
-	
+	//glutSetCursor(GLUT_CURSOR_NONE); 
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glEnable(GL_DEPTH_TEST); //enable the depth testing
@@ -530,7 +530,7 @@ void init(void) {
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
 	glEnable(GL_LIGHTING); //enable the lighting
 	glEnable(GL_LIGHT0); //enable LIGHT0, our Diffuse Light
-
+	glEnable(GL_NORMALIZE);
 
 	GLfloat qaAmbientLight[]	= {0.2, 0.2, 0.2, 1.0};
 	GLfloat qaDiffuseLight[]	= {0.8, 0.8, 0.8, 1.0};
@@ -694,10 +694,10 @@ void mouseMovement(int x, int y) {
 	 //set the xrot to xrot with the addition of the difference in the y position
 	
 	yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
-	if(xrot < 30){
+	if(xrot < 70){
 		xrot += (float) diffy;
 	}else{
-		xrot = 30;
+		xrot = 70;
 		
 	}
 	if(xrot > -30){
@@ -707,17 +707,23 @@ void mouseMovement(int x, int y) {
 		
 	}
 
-	printf("%d \n", x);
+	
 	if(x >= windowSizeWidth-100){
-		glutWarpPointer(windowSizeWidth-110,y);
+		
+		glutWarpPointer(windowSizeWidth-101,y);
+		yrot += 3;
+		
 	}else if(x <= 100){
-		glutWarpPointer(110,y);
+		
+		glutWarpPointer(101,y);
+		yrot -= 3;
+		
 	}
 
 	if(y >= windowSizeHeight-100){
-		glutWarpPointer(x,windowSizeHeight-110);
+		glutWarpPointer(x,windowSizeHeight-101);
 	}else if(y <= 100){
-		glutWarpPointer(x,110);
+		glutWarpPointer(x,100);
 	}
 
 }
