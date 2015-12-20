@@ -142,6 +142,7 @@ public:
 	}
 	
 	//Input block to check collision with, and direction THIS block is moving in (pos 1, neg 1)
+	//Input block to check collision with, and direction THIS block is moving in (pos 1, neg 1)
 	bool collisionCheck(Block block, float amount){
 		//Once again, generate points on each end of this block
 		float point1x;
@@ -168,37 +169,119 @@ public:
 
 		//To calculate where the block wants to move
 		float moveAmnt = amount;
-		//printf("Move:%f\n", amount);
-		float blockWidth = 1;
+
+		float blockWidth = 2;
+
 		//Lol this whole section is so messy
 		//Now check if the generated points enter the other block's space
+		// if (orient == 'x'){
+		// 	//Check first point
+		// 	if (((point1x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point1x + moveAmnt) >= (block.getXPos() - block.getLength()))){
+		// 		if ((point1z <= (block.getZPos() + blockWidth)) && (point1z >= (block.getZPos() - blockWidth))){
+		// 			return true;
+		// 		}
+		// 	}
+
+		// 	//Check second point
+		// 	if (((point2x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point2x  + moveAmnt) >= (block.getXPos() - block.getLength()))){
+		// 		if ((point2z <= (block.getZPos() + blockWidth)) && (point2z >= (block.getZPos() - blockWidth))){
+		// 			return true;
+		// 		}
+		// 	}
+
+		// 	//Now do the same for shifted points
+		// 	//First point shifted by blockwidth
+		// 	if (((point1x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point1x  + moveAmnt) >= (block.getXPos() - block.getLength()))){
+		// 		if ((point1z+blockWidth <= (block.getZPos() + blockWidth)) && (point1z+blockWidth >= (block.getZPos() - blockWidth))){
+		// 			return true;
+		// 		}
+		// 	}
+
+		// 	if (((point1x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point1x  + moveAmnt) >= (block.getXPos() - block.getLength()))){
+		// 		if ((point1z-blockWidth <= (block.getZPos() + blockWidth)) && (point1z-blockWidth >= (block.getZPos() - blockWidth))){
+		// 			return true;
+		// 		}
+		// 	}
+		// 	//Second point shifted by block width
+		// 	if (((point2x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point2x  + moveAmnt) >= (block.getXPos() - block.getLength()))){
+		// 		if ((point2z+blockWidth <= (block.getZPos() + blockWidth)) && (point2z+blockWidth >= (block.getZPos() - blockWidth))){
+		// 			return true;
+		// 		}
+		// 	}
+
+		// 	if (((point2x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point2x  + moveAmnt) >= (block.getXPos() - block.getLength()))){
+		// 		if ((point2z-blockWidth <= (block.getZPos() + blockWidth)) && (point2z-blockWidth >= (block.getZPos() - blockWidth))){
+		// 			return true;
+		// 		}
+		// 	}
+
+		// }
+
+		// else if (orient == 'z'){
+		// 	if ((point1x < (block.getXPos() + blockWidth) && (point1x >= (block.getXPos() - blockWidth))))
+		// 		if (((point1z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point1z + moveAmnt) >= (block.getZPos() - block.getLength())))
+		// 			return true;
+
+		// 	if ((point2x < (block.getXPos() + blockWidth) && (point2x >= (block.getXPos() - blockWidth))))
+		// 		if (((point2z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point2z + moveAmnt) >= (block.getZPos() - block.getLength())))
+		// 			return true;
+
+		// 	if ((point1x-blockWidth < (block.getXPos() + blockWidth) && (point1x-blockWidth >= (block.getXPos() - blockWidth))))
+		// 		if (((point1z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point1z + moveAmnt) >= (block.getZPos() - block.getLength())))
+		// 			return true;
+
+		// 	if ((point1x-blockWidth < (block.getXPos() + blockWidth) && (point1x-blockWidth >= (block.getXPos() - blockWidth))))
+		// 		if (((point1z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point1z + moveAmnt) >= (block.getZPos() - block.getLength())))
+		// 			return true;
+
+		// 	if ((point2x+blockWidth < (block.getXPos() + blockWidth) && (point2x+blockWidth >= (block.getXPos() - blockWidth))))
+		// 		if (((point2z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point2z + moveAmnt) >= (block.getZPos() - block.getLength())))
+		// 			return true;
+
+		// 	if ((point2x-blockWidth < (block.getXPos() + blockWidth) && (point2x-blockWidth >= (block.getXPos() - blockWidth))))
+		// 		if (((point2z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point2z + moveAmnt) >= (block.getZPos() - block.getLength())))
+		// 			return true;
+		// }
+
+		// return false;
+		
+		 float x1 = xPos;
+		 float z1 = zPos;
+		 float x1length;
+		 float z1length;
+
 		if (orient == 'x'){
-			//Check first point
-			if (((point1x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point1x + moveAmnt) >= (block.getXPos() - block.getLength()))){
-				if ((point1z <= (block.getZPos() + blockWidth)) && (point1z >= (block.getZPos() - blockWidth))){
-					return true;
-				}
-			}
+			x1+=moveAmnt;
+			x1length = length/2.0;
+			z1length = blockWidth;
+	   }
 
-			//Check second point
-			if (((point2x + moveAmnt) <= (block.getXPos() + block.getLength())) && ((point2x  + moveAmnt) >= (block.getXPos() - block.getLength()))){
-				if ((point2z <= (block.getZPos() + blockWidth)) && (point2z >= (block.getZPos() - blockWidth))){
-					return true;
-				}
-			}
-		}
+	   else if (orient == 'z'){
+	   		z1+=moveAmnt;
+			x1length = blockWidth;
+			z1length = length/2.0;
+	   }
 
-		else if (orient == 'z'){
-			if ((point1x < (block.getXPos() + blockWidth) && (point1x >= (block.getXPos() - blockWidth))))
-				if (((point1z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point1z + moveAmnt) >= (block.getZPos() - block.getLength())))
-					return true;
+	   	float x2 = block.getXPos();
+		float z2 = block.getZPos();
+		float x2length;
+		float z2length;
 
-			if ((point2x < (block.getXPos() + blockWidth) && (point2x >= (block.getXPos() - blockWidth))))
-				if (((point2z + moveAmnt) <= (block.getZPos() + block.getLength())) && ((point2z + moveAmnt) >= (block.getZPos() - block.getLength())))
-					return true;
-		}
+	   if (block.getOrient() == 'x'){
+			x2length = block.getLength()/2.0;
+			z2length = blockWidth;
+	   }
+	   else if (block.getOrient() == 'z'){
+			x2length = blockWidth;
+			z2length = block.getLength()/2.0;
+	   }
 
-		return false;
+	   printf("x1:%f z1:%f x1L:%f z1L:%f    x2:%f z2:%f x2L:%f z2L:%f\n", x1, z1, x1length, z1length, x2, z2, x2length, z2length);
+	    if (((x1 - x1length) <= (x2 + x2length)) && ((x1 + x1length) >= (x2 - x2length)) &&
+      ((z1 + z1length) >= (z2 - z2length)) && ((z1 - z1length) <= (z2 + z2length))) {return true;}
+
+		//return (((x1 + x1length) > (x2 - x2length)) && ((x1-x1length) > (x2+x2length)) && ((z1-z1length) > (z2+z2length)) && ((z1+z1length) < (z2-z2length)));
+			
 	}
 
 	//Move object in specified direction
@@ -427,13 +510,6 @@ void generateLevel(int level){
 		sceneBlocks[5].set(-2.7, -4 , 2.1, 2, false, true);
 		sceneBlocks[6].set(0.4, -4 , 5.1, 2, false, false);
 		sceneBlocks[7].set(2.5, -4 , 4.1, 3, false, false);
-
-
-
-
-
-
-
 
 		for (int i = 0; i < 8; i++)
 			activeBlocks[i] = true;
