@@ -141,6 +141,39 @@ public:
 		glPopMatrix(); 
 	}
 	
+	//Checks if the given point is within the shape's hitbox
+	bool isInHitBox(float x, float y, float z){
+
+		float blockWidth = 2;
+
+		float x1 = xPos;
+		float z1 = zPos;
+		float x1length;
+		float z1length;
+		float y1 = yPos;
+		float y1length = blockWidth;
+
+		if (orient == 'x'){
+			x1length = length/2.0;
+			z1length = blockWidth;
+	   }
+
+	   else if (orient == 'z'){
+			x1length = blockWidth;
+			z1length = length/2.0;
+	   }
+
+		if ((x <= x1+x1length) && (x >= x1-x1length)){
+			if ((z <= z1+z1length) && (z >= z1-z1length)){
+				if ((y <= y1 + y1length) && (y >= y1-y1length)){
+					return true;
+				}
+			}	
+		}
+			
+		return false;
+	}
+
 	//Input block to check collision with, and direction THIS block is moving in (pos 1, neg 1)
 	//Input block to check collision with, and direction THIS block is moving in (pos 1, neg 1)
 	bool collisionCheck(Block block, float amount){
@@ -302,6 +335,7 @@ Block sceneBlocks[20];
 bool activeBlocks[20];
 
 bool grabbing = false;
+int toSelect;
 
 //Test coordinates for grabbing mechanic
 float test1x;
@@ -313,6 +347,22 @@ int windowSizeHeight = 720;
 //an array for iamge data
 GLubyte* tex;
 int width, height, max;
+
+//Coordinates of mouse click in the world
+float worldX;
+float worldY;
+float worldZ;
+
+//camPos coords when click occurs
+float cX;
+float cY;
+float cZ;
+
+//Mouse ray slopes (d for delta)
+float deltaY;
+float deltaX;
+float deltaZ;
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -329,6 +379,80 @@ void drawTestPoint(int X, int Z){
 
 	glPopMatrix(); 
 }
+
+void drawRay(){
+	glBegin(GL_LINES);
+		glColor3f(1, 1, 1);
+		glVertex3f(cX, cY, cZ);
+		glVertex3f(worldX + deltaX * 10, worldY + deltaY * 10, worldZ + deltaZ * 10);
+	glEnd();
+
+	glutPostRedisplay();
+}
+
+
+
+void mouseToWorld(int mouseX, int mouseY, int mouseZ){
+    GLint viewport[4];
+    GLdouble modelMatrix[16];   
+    GLdouble projectionMatrix[16];  
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
+
+    float winY = float(viewport[3] - mouseY);
+
+    double x, y, z;
+    gluUnProject((double)mouseX, winY, mouseZ, 
+        modelMatrix, projectionMatrix, viewport,
+        &x, &y, &z);
+    
+    worldX = x;
+    worldY = y;
+    worldZ = z;
+}
+
+//Cycles through all the points in a line, checks if each object on the list interects with it
+int rayCasting(int mouseX, int mouseY){
+	mouseToWorld(1280/2, 720/2, 1);
+
+	//0.0f, -4.0f, 5.0f
+	//xpos+0.1, zpos+5
+	//Calculate slopes for ray
+
+	float wtfX = xpos+0.1;
+	float wtfY = ypos-4;
+	float wtfZ = zpos+5;
+
+	deltaX = (worldX - wtfX);
+	deltaY = (worldY - wtfY);
+	deltaZ = (worldZ - wtfZ);
+
+	//Save camera position for ray drawing
+	cX = wtfX;
+	cY = wtfY;
+	cZ = wtfZ;
+
+	//Go through points in the ray
+	for (int i = 0; i < 100000; i++){ // lol overkill resolution
+		float linePointX = cX + (worldX + deltaX)*(float)i*0.00001;
+		float linePointY = cY + (worldY + deltaY)*(float)i*0.00001;
+		float linePointZ = cZ + (worldZ + deltaZ)*(float)i*0.00001;
+
+		//Loop through every active shape in the array
+		for (int j = 0; j < 20; j++){
+			if (activeBlocks[j]){
+				if(sceneBlocks[j].isInHitBox(linePointX, linePointY, linePointZ)){
+					return j;
+				}
+			}
+		}
+	}
+
+	return -1;
+}
+
 
 //Grab block closest to given x,z coords
 void grabNearestBlock(float x, float z){
@@ -672,7 +796,7 @@ void renderScene(void) {
 				0.0f, 20.0f,  0.0f);
 
 
-
+	drawRay();
 	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	glEnable(GL_CULL_FACE);
@@ -793,11 +917,11 @@ void mouse(int btn, int state, int x, int y){
 			if(state==GLUT_DOWN){
 				ungrabAll();
 				grabbing = true;
-				//0.0f, -4.0f, 5.0f,
 				
 				grabNearestBlock(xpos+0.1, zpos+5); //CHARACTER POSITION??
+				int toSelect = rayCasting(x, y);
 
-				printf("%f,%f\n",xpos, zpos);
+				printf("%i\n",toSelect);
 				}
 			else if(state==GLUT_UP){
 				ungrabAll();
@@ -822,10 +946,10 @@ void mouseMovement(int x, int y) {
 		xrot = 70;
 		
 	}
-	if(xrot > -30){
+	if(xrot > -10){
 		xrot += (float) diffy;
 	}else{
-		xrot = -30;
+		xrot = -10;
 		
 	}
 
