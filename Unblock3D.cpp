@@ -160,7 +160,7 @@ public:
 
 		//To calculate where the block wants to move
 		float moveAmnt = amount;
-		printf("Move:%f\n", amount);
+		//printf("Move:%f\n", amount);
 		float blockWidth = 1;
 		//Lol this whole section is so messy
 		//Now check if the generated points enter the other block's space
@@ -306,6 +306,8 @@ float test1z;
 
 float test2x;
 float test2z;
+int windowSizeWidth = 1280;
+int windowSizeHeight = 720;
 
 void drawTestPoints(){
 	glPushMatrix();
@@ -371,8 +373,8 @@ void grabNearestBlock(float x, float z){
 			// test2x = point2x;
 			// test2z = point2z;
 
-			printf("Block #%i  Distance1: %f\n", i, distance1);
-			printf("Block #%i  Distance2: %f\n", i, distance2);
+			//printf("Block #%i  Distance1: %f\n", i, distance1);
+			//printf("Block #%i  Distance2: %f\n", i, distance2);
 
 			//Check if either of the two points are closer than any previous block points
 			if (distance1 < distanceToClosest){
@@ -387,7 +389,7 @@ void grabNearestBlock(float x, float z){
 		}
 	}
 
-	printf("Grabbed %i\n", closestBlock);
+	//printf("Grabbed %i\n", closestBlock);
 	sceneBlocks[closestBlock].grab();
 }
 
@@ -689,26 +691,40 @@ void mouseMovement(int x, int y) {
 	int diffy=y-lasty; //check the difference between the current y and the last y position
 	lastx=x; //set lastx to the current x position
 	lasty=y; //set lasty to the current y position
-	xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
+	 //set the xrot to xrot with the addition of the difference in the y position
+	
 	yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
-	if(diffx < 0){ //limits rotation of camera in the downward direction
-		xrot += 1;
-		if(xrot >45){
-			xrot = 45;
-		}
+	if(xrot < 30){
+		xrot += (float) diffy;
+	}else{
+		xrot = 30;
+		
 	}
-	if(diffx > 0){ //limits rotation of camera in the upward direction
-		xrot -= 1;
-		if(xrot < -30){
-			xrot = -30;
-		}
+	if(xrot > -30){
+		xrot += (float) diffy;
+	}else{
+		xrot = -30;
+		
 	}
+
+	printf("%d \n", x);
+	if(x >= windowSizeWidth-100){
+		glutWarpPointer(windowSizeWidth-110,y);
+	}else if(x <= 100){
+		glutWarpPointer(110,y);
+	}
+
+	if(y >= windowSizeHeight-100){
+		glutWarpPointer(x,windowSizeHeight-110);
+	}else if(y <= 100){
+		glutWarpPointer(x,110);
+	}
+
 }
 
 int main(int argc, char **argv) {
 	// init GLUT and create window
-	int windowSizeWidth = 1280;
-	int windowSizeHeight = 720;
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-windowSizeWidth)/2,
