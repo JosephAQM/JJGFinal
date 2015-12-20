@@ -530,7 +530,7 @@ bool checkBlockCollisions(float amount){
 			if (sceneBlocks[i].getOrient() == 'x'){
 				if ((sceneBlocks[i].getXPos() - sceneBlocks[i].getLength() + amount) < -8.9)
 					return true;
-				else if ((sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() + amount) > 2.6)
+				else if (((sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() + amount) > 2.6) && !sceneBlocks[i].isKey())
 					return true;
 				}
 			else if (sceneBlocks[i].getOrient() == 'z'){
