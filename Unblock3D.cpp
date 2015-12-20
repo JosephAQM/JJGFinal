@@ -118,7 +118,7 @@ public:
 		
 		//Change to brown later
 		if (isKeyBlock) {glColor3d(1, 0, 0);}
- 		else glColor3d(1, 0.5, 0.5);
+ 		else glColor3d(0.5, 0.5, 0.5);
 
  		//Scale cube to create block in correct oriantaion and length
  		if (orient == 'x')
@@ -309,26 +309,6 @@ float test2z;
 int windowSizeWidth = 1280;
 int windowSizeHeight = 720;
 
-void drawTestPoints(){
-	glPushMatrix();
-
-	glColor3d(1, 0, 0);
-	glTranslated(test1x,1.5,test1z);
-
-	glutSolidCube(1);
-
-	glPopMatrix(); 
-
-	//==============
-	glPushMatrix();
-
-	glColor3d(1, 0, 0);
-	glTranslated(test2x,1.5,test2z);
-
-	glutSolidCube(1);
-
-	glPopMatrix(); 
-}
 
 //-----------------------------------------------------------------------------------------------
 
@@ -366,15 +346,6 @@ void grabNearestBlock(float x, float z){
 			//Calculate distance between the character and each point
 			float distance1 = sqrt(pow(point1x - x, 2) + pow(point1z - z, 2));
 			float distance2 = sqrt(pow(point2x - x, 2) + pow(point2z - z, 2));
-
-			// //TESTING
-			// test1x = point1x;
-			// test1z = point1z;
-			// test2x = point2x;
-			// test2z = point2z;
-
-			//printf("Block #%i  Distance1: %f\n", i, distance1);
-			//printf("Block #%i  Distance2: %f\n", i, distance2);
 
 			//Check if either of the two points are closer than any previous block points
 			if (distance1 < distanceToClosest){
@@ -425,6 +396,33 @@ void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 				if (((moveZ > 0) && !checkBlockCollisions(moveZ)) || ((moveZ < 0) && !checkBlockCollisions(moveX)))
 					sceneBlocks[i].move(0,0,moveZ);
 		}
+	}
+}
+
+void clearBlocks(){
+	for (int i = 0; i < 20; i++){
+		activeBlocks[i] = false;
+	}
+}
+
+void generateLevel(int level){
+	if (level == 1){
+		//x = horizontal, z vertical, 0,0 is middle, -7,-7 is top left (all relative to initial camera)
+		//                 x    y    z  length  key     ox
+		sceneBlocks[0].set(-7, -4 , -7, 2, false, false);
+		sceneBlocks[1].set(-7, -4 , -2, 2, true, true);
+		sceneBlocks[2].set(-6, -4 , 1, 3, false, true);
+		sceneBlocks[3].set(-7, -4 , 5, 2, false, true);
+		sceneBlocks[4].set(-3.7, -4 , 5, 2, false, false);
+		sceneBlocks[5].set(-0.3, -4 , 5, 2, false, true);
+		sceneBlocks[6].set(5.8, -4 , -6, 4, false, true);
+		sceneBlocks[7].set(8.2, -4 , -1, 3, false, false);
+		sceneBlocks[8].set(5.7, -4 , 0.08, 2, false, false);
+		sceneBlocks[9].set(3.2, -4 , -1.92, 2, false, false);
+		sceneBlocks[10].set(5.7, -4 , 5, 2, false, true);
+
+		for (int i = 0; i < 20; i++)
+			activeBlocks[i] = true;
 	}
 }
 
@@ -586,8 +584,6 @@ void renderScene(void) {
 	drawTorches();
 	drawAllBlocks();
 
-	//TESTING
-	//drawTestPoints();
 	//angle+=0.5f;
 	
 	glutSwapBuffers();
@@ -753,13 +749,13 @@ int main(int argc, char **argv) {
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
 
-
+	generateLevel(1);
 	//                 x,y,z pos length key orient x
-	sceneBlocks[0].set(5.0, -3 , 3.0, 2, false, true);
-	activeBlocks[0] = true;
+	// sceneBlocks[0].set(-6.0, -3 , -6.0, 2, false, true);
+	// activeBlocks[0] = true;
 
-	sceneBlocks[1].set(-5.0, -3 , -4.0, 3, false, false);
-	activeBlocks[1] = true;
+	// sceneBlocks[1].set(-5.0, -3 , -4.0, 3, false, false);
+	// activeBlocks[1] = true;
 
 	//sceneBlocks[0].grab();
 	// enter GLUT event processing loop
