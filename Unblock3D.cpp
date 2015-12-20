@@ -182,9 +182,8 @@ public:
 			z2length = block.getLength()/2.0;
 	   }
 
-	   printf("x1:%f z1:%f x1L:%f z1L:%f    x2:%f z2:%f x2L:%f z2L:%f\n", x1, z1, x1length, z1length, x2, z2, x2length, z2length);
-	    if (((x1 - x1length) <= (x2 + x2length)) && ((x1 + x1length) >= (x2 - x2length)) &&
-      ((z1 + z1length) >= (z2 - z2length)) && ((z1 - z1length) <= (z2 + z2length))) {return true;}
+	    return (((x1 - x1length) <= (x2 + x2length)) && ((x1 + x1length) >= (x2 - x2length)) &&
+      ((z1 + z1length) >= (z2 - z2length)) && ((z1 - z1length) <= (z2 + z2length)));
 			
 	}
 
@@ -359,7 +358,7 @@ void grabNearestBlock(float x, float z){
 		}
 	}
 
-	//printf("Grabbed %i\n", closestBlock);
+	printf("Grabbed %i\n", closestBlock);
 	sceneBlocks[closestBlock].grab();
 }
 
@@ -376,6 +375,7 @@ bool checkBlockCollisions(float amount){
 		if (activeBlocks[i] && sceneBlocks[i].getGrabbed()){
 			for (int j = 0; j < 20; j++)
 				if ((i != j) && activeBlocks[j] && sceneBlocks[i].collisionCheck(sceneBlocks[j], amount)){
+					printf("Collision between %i and %i\n",i ,j);
 					return true;
 				}
 		}
