@@ -309,6 +309,10 @@ float test2z;
 int windowSizeWidth = 1280;
 int windowSizeHeight = 720;
 
+//an array for iamge data
+GLubyte* tex;
+int width, height, max;
+
 
 //-----------------------------------------------------------------------------------------------
 
@@ -519,6 +523,65 @@ void room1()
     quad(0,1,5,4,10,5,11);
 }
 
+/* LoadPPM -- loads the specified ppm file, and returns the image data as a GLubyte 
+ *  (unsigned byte) array. Also returns the width and height of the image, and the
+ *  maximum colour value by way of arguments
+ *  usage: GLubyte myImg = LoadPPM("myImg.ppm", &width, &height, &max);
+ */
+GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
+{
+	GLubyte* img;
+	FILE *fd;
+	int n, m;
+	int  k, nm;
+	char c;
+	int i;
+	char b[100];
+	float s;
+	int red, green, blue;
+	
+	fd = fopen(file, "r");
+	fscanf(fd,"%[^\n] ",b);
+	if(b[0]!='P'|| b[1] != '3')
+	{
+		printf("%s is not a PPM file!\n",file); 
+		exit(0);
+	}
+	printf("%s is a PPM file\n", file);
+	fscanf(fd, "%c",&c);
+	while(c == '#') 
+	{
+		fscanf(fd, "%[^\n] ", b);
+		printf("%s\n",b);
+		fscanf(fd, "%c",&c);
+	}
+	ungetc(c,fd); 
+	fscanf(fd, "%d %d %d", &n, &m, &k);
+
+	printf("%d rows  %d columns  max value= %d\n",n,m,k);
+
+	nm = n*m;
+
+	img = (GLubyte*)(malloc(3*sizeof(GLuint)*nm));
+
+	s=255.0/k;
+
+
+	for(i=0;i<nm;i++) 
+	{
+		fscanf(fd,"%d %d %d",&red, &green, &blue );
+		img[3*nm-3*i-3]=red*s;
+		img[3*nm-3*i-2]=green*s;
+		img[3*nm-3*i-1]=blue*s;
+	}
+
+	*width = n;
+	*height = m;
+	*max = k;
+
+	return img;
+}
+
 void init(void) {
 	//glutSetCursor(GLUT_CURSOR_NONE); 
 	glCullFace(GL_BACK);
@@ -543,11 +606,17 @@ void init(void) {
 
 	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH); //set the shader to smooth shader
+	
+	glEnable(GL_TEXTURE_2D); //enable texture mapping in opengl
+
+	//load specified ppm file for use as texture
+	tex = LoadPPM("snail_a.ppm", &width, &height, &max);
 }
 
 void drawAllBlocks(){
 	for (int i = 0; i < 20; i++){//(sizeof(sceneShapes)/sizeof(*sceneShapes)); i++) {
 		if (activeBlocks[i]) {
+			glTexCoord2f(1, 1);
 			sceneBlocks[i].draw();
 		}
 	}
@@ -583,6 +652,16 @@ void renderScene(void) {
 	glDisable(GL_CULL_FACE);
 	drawTorches();
 	drawAllBlocks();
+	//--------------------------------------set texture------------------------------------
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 
+					0, GL_RGB, GL_UNSIGNED_BYTE, tex);
+
+
+	//set texture proterties
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	//angle+=0.5f;
 	
@@ -745,6 +824,7 @@ int main(int argc, char **argv) {
 	
 	//from movement code
 	//glutReshapeFunc(reshape);
+	glutWarpPointer(windowSizeWidth/2, windowSizeHeight/2);
 	glutPassiveMotionFunc(mouseMovement); //check for mouse movement
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
