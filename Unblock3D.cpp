@@ -115,6 +115,14 @@ public:
 
 		//Move block origin to appropriate location
 		glTranslated(xPos,yPos,zPos);
+		float m_amb[] = {0.33, 0.22, 0.03, 1.0};
+		float m_dif[] = {0.78, 0.57, 0.11, 1.0};
+		float m_spec[] = {0.99, 0.91, 0.81, 1.0};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
+
 		
 		//Change to brown later
 		if (isKeyBlock) {glColor3d(1, 0, 0);}
@@ -610,7 +618,7 @@ void init(void) {
 	glEnable(GL_TEXTURE_2D); //enable texture mapping in opengl
 
 	//load specified ppm file for use as texture
-	tex = LoadPPM("snail_a.ppm", &width, &height, &max);
+	tex = LoadPPM("marble.ppm", &width, &height, &max);
 }
 
 void drawAllBlocks(){
