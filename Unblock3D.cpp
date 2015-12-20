@@ -380,6 +380,16 @@ void drawTestPoint(int X, int Z){
 	glPopMatrix(); 
 }
 
+void checkWin(){
+	for (int i = 0; i < 20; i++){
+		if(activeBlocks[i] && sceneBlocks[i].isKey()){
+			if (sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() > 8.5){
+				printf("Winner!\n");
+			}
+		}
+	}
+}
+
 void drawRay(){
 	glBegin(GL_LINES);
 		glColor3f(1, 1, 1);
@@ -491,7 +501,7 @@ void grabBlock(float x, float z, int mouseY, int mouseX){
 		float distance2 = sqrt(pow(point2x - x, 2) + pow(point2z - z, 2));
 
 		//Check if either of the two points are closer than any previous block points
-		if (distance1 < 3 || distance2 < 3){
+		if (distance1 < 4 || distance2 < 4){
 			printf("Grabbed %i\n", toSelect);
 			sceneBlocks[toSelect].grab();
 			grabbing = true;
@@ -513,9 +523,25 @@ bool checkBlockCollisions(float amount){
 			for (int j = 0; j < 20; j++)
 				if ((i != j) && activeBlocks[j] && sceneBlocks[i].collisionCheck(sceneBlocks[j], amount)){
 					printf("Collision between %i and %i\n",i ,j);
+					return true;					
+				}
+
+			//Check if block exits boundaries
+			if (sceneBlocks[i].getOrient() == 'x'){
+				if ((sceneBlocks[i].getXPos() - sceneBlocks[i].getLength() + amount) < -8.9)
+					return true;
+				else if ((sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() + amount) > 2.6)
 					return true;
 				}
+			else if (sceneBlocks[i].getOrient() == 'z'){
+				if ((sceneBlocks[i].getZPos() + sceneBlocks[i].getLength() + amount) > 6.5)
+					return true;
+				else if ((sceneBlocks[i].getZPos() - sceneBlocks[i].getLength() + amount) < -4.2)
+					return true;
+				
+			}
 		}
+
 	}
 }
 
@@ -527,13 +553,14 @@ void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 				if (((moveX > 0) && !checkBlockCollisions(moveX)) || ((moveX < 0) && !checkBlockCollisions(moveX))){
 					sceneBlocks[i].move(moveX, 0, 0);
 					xpos+=moveX;
-
+					checkWin();
 				}
 			}
 			else 
 				if (((moveZ > 0) && !checkBlockCollisions(moveZ)) || ((moveZ < 0) && !checkBlockCollisions(moveX))){
 					sceneBlocks[i].move(0,0,moveZ);
 					zpos+=moveZ;
+					checkWin();
 				}
 		}
 	}
@@ -545,15 +572,6 @@ void clearBlocks(){
 	}
 }
 
-bool checkWin(){
-	for (int i = 0; i < 20; i++){
-		if(activeBlocks[i] && sceneBlocks[i].isKey()){
-			if (sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() > 12){
-				return true;
-			}
-		}
-	}
-}
 
 void generateLevel(int level){
 	if (level ==1){
