@@ -379,12 +379,31 @@ void drawTestPoint(int X, int Z){
 
 	glPopMatrix(); 
 }
+float temp;
+void moveBlock(){
+	temp = sceneBlocks[0].getYPos();
+	temp -= 0.1;
+	sceneBlocks[0].set(sceneBlocks[0].getXPos(), temp , sceneBlocks[0].getZPos(), 2, true, true);
+}
 
+static void timerCallback (int value)
+{
+	//call animation here
+	moveBlock();
+	glutPostRedisplay();
+	glutTimerFunc (1, timerCallback, value);
+}
 void checkWin(){
 	for (int i = 0; i < 20; i++){
 		if(activeBlocks[i] && sceneBlocks[i].isKey()){
 			if (sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() > 8.5){
 				printf("Winner!\n");
+				timerCallback(0);
+/* 				for(int j = 200; j > 0; j--){
+					temp = sceneBlocks[0].getYPos();
+					temp -= 0.01;
+					sceneBlocks[0].set(sceneBlocks[0].getXPos(), temp , sceneBlocks[0].getZPos(), 2, false, false);
+				} */
 			}
 		}
 	}
@@ -787,8 +806,6 @@ void init(void) {
 	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH); //set the shader to smooth shader
 	
-	
-
 	//load specified ppm file for use as texture
 	tex = LoadPPM("bricks2.ppm", &width, &height, &max);
 }
