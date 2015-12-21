@@ -383,6 +383,7 @@ void drawTestPoint(int X, int Z){
 float temp;
 void moveBlock(){
 	temp = sceneBlocks[0].getYPos();
+	printf("%f\n", temp);
 	temp -= 0.01;
 	if(temp > -5.5){
 		sceneBlocks[0].set(sceneBlocks[0].getXPos(), temp , sceneBlocks[0].getZPos(), 2, true, true);
@@ -400,7 +401,7 @@ void checkWin(){
 	for (int i = 0; i < 20; i++){
 		if(activeBlocks[i] && sceneBlocks[i].isKey()){
 			if (sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() > 8.5){
-				printf("You Won!\n");
+				printf("Winner!\n");
 				timerCallback(0);
 /* 				for(int j = 200; j > 0; j--){
 					temp = sceneBlocks[0].getYPos();
@@ -491,7 +492,7 @@ void grabBlock(float x, float z, int mouseY, int mouseX){
 
 	int toSelect = rayCasting(mouseX, mouseY);
 
-	//printf("%i\n",toSelect);
+	printf("%i\n",toSelect);
 
 	if (activeBlocks[toSelect]){
 		//Calculates a point on each end of the block (depends on orientation)
@@ -524,7 +525,7 @@ void grabBlock(float x, float z, int mouseY, int mouseX){
 
 		//Check if either of the two points are closer than any previous block points
 		if (distance1 < 4 || distance2 < 4){
-			//printf("Grabbed %i\n", toSelect);
+			printf("Grabbed %i\n", toSelect);
 			sceneBlocks[toSelect].grab();
 			grabbing = true;
 		}
@@ -550,7 +551,7 @@ bool checkBlockCollisions(float amount){
 		if (activeBlocks[i] && sceneBlocks[i].getGrabbed()){
 			for (int j = 0; j < 20; j++)
 				if ((i != j) && activeBlocks[j] && sceneBlocks[i].collisionCheck(sceneBlocks[j], amount)){
-					//printf("Collision between %i and %i\n",i ,j);
+					printf("Collision between %i and %i\n",i ,j);
 					return true;					
 				}
 
@@ -757,7 +758,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 		printf("%s is not a PPM file!\n",file); 
 		exit(0);
 	}
-	//printf("%s is a PPM file\n", file);
+	printf("%s is a PPM file\n", file);
 	fscanf(fd, "%c",&c);
 	while(c == '#') 
 	{
@@ -768,7 +769,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 	ungetc(c,fd); 
 	fscanf(fd, "%d %d %d", &n, &m, &k);
 
-	//printf("%d rows  %d columns  max value= %d\n",n,m,k);
+	printf("%d rows  %d columns  max value= %d\n",n,m,k);
 
 	nm = n*m;
 
@@ -791,19 +792,9 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 
 	return img;
 }
-void opText(){
-	printf("===============================Unblock3D=============================== \n");
-	printf("Welcome to Unblock3D developed by John Zhang, Joseph Manalo, Gabriel Lopez de Leon \n");
-	printf("The goal of this game is to move the 'Key Block' to the door to unlock it.\n");
-	printf("You are in control of a 'Move Block' which gives you the power to interact with the slabs.\n");
-	printf("Look around by moving the mouse, hold left click while the move block is pointing at a block and you are near/inside the block to drag it around.\n");
-	printf("Use WASD to move around the scene. \n");
-	printf("Push the Key Stone to the green tile to win the game!\n");
-	printf("This game was heavily inspiered by the 2D mobile game UnblockMe.\n");
-}
+
 void init(void) {
-	glutSetCursor(GLUT_CURSOR_NONE);
-	opText();	
+	//glutSetCursor(GLUT_CURSOR_NONE); 
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glEnable(GL_DEPTH_TEST); //enable the depth testing
@@ -932,8 +923,8 @@ void renderScene(void) {
 	//temp character 
 	glTranslatef(0.0f, -1.0f, -cRadius);
 	glRotatef(xrot,1.0,0.0,0.0);
-	glColor3f(0.196078, 0.6f, 0.8f);
-	glutSolidIcosahedron();
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glutSolidCube(1); //Our character to follow
 	//used for character movement
 	glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
 	glTranslated(-xpos,0.0f,-zpos); //translate the screen to the position of our camera
@@ -1020,6 +1011,11 @@ void keyboard(unsigned char key, int x, int y) {
 	xrotrad = (xrot / 180 * 3.141592654f); 
 	moveGrabbedBlock(float(sin(yrotrad) * 0.3), -float(cos(yrotrad) * 0.3), -float(sin(xrotrad)) * 0.3);
 
+	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
+		return;
+						//	float wtfX = xpos+0.1;
+						// float wtfY = -4;
+						// float wtfZ = zpos+5;
 	if (!grabbing){
 		xpos += float(sin(yrotrad)) * 0.3;
 		zpos -= float(cos(yrotrad)) * 0.3;
@@ -1032,6 +1028,10 @@ void keyboard(unsigned char key, int x, int y) {
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xrotrad = (xrot / 180 * 3.141592654f); 
 	moveGrabbedBlock(-float(sin(yrotrad) * 0.3), float(cos(yrotrad) * 0.3), float(sin(xrotrad)) * 0.3);
+	
+	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
+		return;
+
 	if (!grabbing){
 		xpos -= float(sin(yrotrad)) * 0.3;
 		zpos += float(cos(yrotrad)) * 0.3;
@@ -1043,7 +1043,8 @@ void keyboard(unsigned char key, int x, int y) {
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	moveGrabbedBlock(float(cos(yrotrad)) * 0.3, 0, float(sin(yrotrad)) * 0.3);
-
+	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
+		return;
 	if (!grabbing){
 		xpos += float(cos(yrotrad)) * 0.3;
 		zpos += float(sin(yrotrad)) * 0.3;
@@ -1055,6 +1056,8 @@ void keyboard(unsigned char key, int x, int y) {
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	moveGrabbedBlock(-float(cos(yrotrad)) * 0.3, 0, -float(sin(yrotrad)) * 0.3);
+	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
+		return;
 	if (!grabbing){
 		xpos -= float(cos(yrotrad)) * 0.3;
 		zpos -= float(sin(yrotrad)) * 0.3;
