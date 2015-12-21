@@ -936,7 +936,7 @@ void renderScene(void) {
 				0.0f, 20.0f,  0.0f);
 
 
-	drawRay();
+	//drawRay();
 	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	glEnable(GL_CULL_FACE);
