@@ -382,8 +382,11 @@ void drawTestPoint(int X, int Z){
 float temp;
 void moveBlock(){
 	temp = sceneBlocks[0].getYPos();
-	temp -= 0.1;
-	sceneBlocks[0].set(sceneBlocks[0].getXPos(), temp , sceneBlocks[0].getZPos(), 2, true, true);
+	printf("%f\n", temp);
+	temp -= 0.01;
+	if(temp > -5.5){
+		sceneBlocks[0].set(sceneBlocks[0].getXPos(), temp , sceneBlocks[0].getZPos(), 2, true, true);
+	}
 }
 
 static void timerCallback (int value)
