@@ -534,6 +534,7 @@ void grabBlock(float x, float z, int mouseY, int mouseX){
 			if (distance1 > distance2){
 				invertMovement = true;
 			}
+			else invertMovement = false;
 		}
 	}	
 }
@@ -557,17 +558,23 @@ bool checkBlockCollisions(float amount){
 
 			//Check if block exits boundaries
 			if (sceneBlocks[i].getOrient() == 'x'){
-				if ((sceneBlocks[i].getXPos() - sceneBlocks[i].getLength() + amount) < -8.9)
+				if ((sceneBlocks[i].getXPos() - sceneBlocks[i].getLength() + amount) < -8.9){
+					//sceneBlocks[i].move(-0.1,0,0);
 					return true;
+				}
 				else if (((sceneBlocks[i].getXPos() + sceneBlocks[i].getLength() + amount) > 2.6) && !sceneBlocks[i].isKey())
+					//sceneBlocks[i].move(0.1,0,0);
 					return true;
 				}
 			else if (sceneBlocks[i].getOrient() == 'z'){
-				if ((sceneBlocks[i].getZPos() + sceneBlocks[i].getLength() + amount) > 6.5)
+				if ((sceneBlocks[i].getZPos() + sceneBlocks[i].getLength() + amount) > 6.5){
+					sceneBlocks[i].move(0,0,-0.001);
 					return true;
-				else if ((sceneBlocks[i].getZPos() - sceneBlocks[i].getLength() + amount) < -4.2)
+				}
+				else if ((sceneBlocks[i].getZPos() - sceneBlocks[i].getLength() + amount) < -4.2){
+					sceneBlocks[i].move(0,0,0.001);
 					return true;
-				
+				}
 			}
 		}
 
@@ -588,7 +595,7 @@ void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 			else 
 				if (((moveZ > 0) && !checkBlockCollisions(moveZ)) || ((moveZ < 0) && !checkBlockCollisions(moveX))){
 					if (invertMovement)
-						moveZ = -moveZ;
+ 						moveZ = -moveZ;
 					sceneBlocks[i].move(0,0,moveZ);
 					zpos+=moveZ;
 					checkWin();
