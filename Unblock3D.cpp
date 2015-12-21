@@ -670,6 +670,7 @@ void drawTorches(){
 }
 void room1()//relative to spawn x axis left and right , z axis is forward and back
 {
+	glPushMatrix();
 	float m_amb[] = {0.33, 0.22, 0.03, 1.0};
 	float m_dif[] = {0.80, 0.80, 0.90, 1.0};
 	float m_spec[] = {0.0, 0.0, 0.0, 1.0};
@@ -695,6 +696,11 @@ void room1()//relative to spawn x axis left and right , z axis is forward and ba
     //glColor3fv(color[5]);
 	glNormal3f(1.0f,0.0f,0.0f);
     quad(0,1,5,4,10,5,11);//left wall relative to spawn
+	//quad on the floor
+	glColor3f(0.0f,1.0f,0.0f);
+	glTranslatef(8.0f,-4.9f,-0.1f);
+	quad(0,4,7,3,2,0,1.4);
+	glPopMatrix();
 }
 
 /* LoadPPM -- loads the specified ppm file, and returns the image data as a GLubyte 
@@ -787,6 +793,87 @@ void init(void) {
 	tex = LoadPPM("bricks2.ppm", &width, &height, &max);
 }
 
+void roomDoor(){
+	glPushMatrix();
+	float m_amb[] = {0.33, 0.22, 0.03, 1.0};
+	float m_dif[] = {0.80, 0.80, 0.90, 1.0};
+	float m_spec[] = {0.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50);
+	glDisable(GL_TEXTURE_2D);
+	glTranslatef(8.0f,-1.5f,-0.1f);
+	glColor3f(0.5f,0.35f,0.05f);
+	quad(2,3,7,6,1.9,3.5,3);
+	glPopMatrix();
+}
+
+void doorPanel1(){
+	glPushMatrix();
+	float m_amb[] = {0.33, 0.22, 0.03, 1.0};
+	float m_dif[] = {0.80, 0.80, 0.90, 1.0};
+	float m_spec[] = {0.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50);
+	glDisable(GL_TEXTURE_2D);
+	glTranslatef(7.99f,-1.5f,-1.6f);
+	glColor3f(0.6f,0.40f,0.06f);
+	quad(2,3,7,6,1.9,3,1);
+	glPopMatrix();
+}
+
+void doorPanel2(){
+	glPushMatrix();
+	float m_amb[] = {0.33, 0.22, 0.03, 1.0};
+	float m_dif[] = {0.80, 0.80, 0.90, 1.0};
+	float m_spec[] = {0.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50);
+	glDisable(GL_TEXTURE_2D);
+	glTranslatef(7.99f,-1.5f,1.4f);
+	glColor3f(0.6f,0.40f,0.06f);
+	quad(2,3,7,6,1.9,3,1);
+	glPopMatrix();
+}
+void doorSplit(){
+	glPushMatrix();
+	float m_amb[] = {0.33, 0.22, 0.03, 1.0};
+	float m_dif[] = {0.80, 0.80, 0.90, 1.0};
+	float m_spec[] = {0.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50);
+	glDisable(GL_TEXTURE_2D);
+	glTranslatef(7.9f,-1.5f,-0.1f);
+	glColor3f(0.0f,0.0f,0.0f);
+	quad(2,3,7,6,1.9,3.5,0.01);
+	glPopMatrix();
+}
+
+void knob1(){
+	glPushMatrix();
+	glColor3f(1.0f,1.0f,1.0f);
+	glTranslatef(9.7f,-1.5f,-1.1f);
+	glRotatef(90,0.0f,1.0f,0.0f);
+	glutSolidTorus(0.1,0.2,10,12);
+	glPopMatrix();
+}
+
+void knob2(){
+	glPushMatrix();
+	glColor3f(1.0f,1.0f,1.0f);
+	glTranslatef(9.7f,-1.5f,0.9f);
+	glRotatef(90,0.0f,1.0f,0.0f);
+	glutSolidTorus(0.1,0.2,10,12);
+	glPopMatrix();
+}
+
 void drawAllBlocks(){
 	for (int i = 0; i < 20; i++){//(sizeof(sceneShapes)/sizeof(*sceneShapes)); i++) {
 		if (activeBlocks[i]) {
@@ -826,6 +913,12 @@ void renderScene(void) {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 	room1();
+	roomDoor();
+	doorPanel1();
+	doorPanel2();
+	doorSplit();
+	knob1();
+	knob2();
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_TEXTURE_2D);
 	drawTorches();
