@@ -335,6 +335,7 @@ Block sceneBlocks[20];
 bool activeBlocks[20];
 
 bool grabbing = false;
+bool invertMovement = false;
 int toSelect;
 
 //Test coordinates for grabbing mechanic
@@ -528,6 +529,12 @@ void grabBlock(float x, float z, int mouseY, int mouseX){
 			sceneBlocks[toSelect].grab();
 			grabbing = true;
 		}
+
+		if (sceneBlocks[toSelect].getOrient() == 'z'){
+			if (distance1 > distance2){
+				invertMovement = true;
+			}
+		}
 	}	
 }
 
@@ -580,6 +587,8 @@ void moveGrabbedBlock(float moveX, float moveY, float moveZ){
 			}
 			else 
 				if (((moveZ > 0) && !checkBlockCollisions(moveZ)) || ((moveZ < 0) && !checkBlockCollisions(moveX))){
+					if (invertMovement)
+						moveZ = -moveZ;
 					sceneBlocks[i].move(0,0,moveZ);
 					zpos+=moveZ;
 					checkWin();
