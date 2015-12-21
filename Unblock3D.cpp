@@ -1029,7 +1029,7 @@ void keyboard(unsigned char key, int x, int y) {
 	xrotrad = (xrot / 180 * 3.141592654f); 
 	moveGrabbedBlock(-float(sin(yrotrad) * 0.3), float(cos(yrotrad) * 0.3), float(sin(xrotrad)) * 0.3);
 	
-	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
+	if ((xpos+0.1 - float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 - float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 + float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 + float(cos(yrotrad)) * 0.4) < -10.5))
 		return;
 
 	if (!grabbing){
@@ -1043,7 +1043,7 @@ void keyboard(unsigned char key, int x, int y) {
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	moveGrabbedBlock(float(cos(yrotrad)) * 0.3, 0, float(sin(yrotrad)) * 0.3);
-	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
+	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 + float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 + float(cos(yrotrad)) * 0.4) < -10.5))
 		return;
 	if (!grabbing){
 		xpos += float(cos(yrotrad)) * 0.3;
@@ -1056,7 +1056,7 @@ void keyboard(unsigned char key, int x, int y) {
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	moveGrabbedBlock(-float(cos(yrotrad)) * 0.3, 0, -float(sin(yrotrad)) * 0.3);
-	if ((xpos+0.1 + float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 + float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
+	if ((xpos+0.1 - float(sin(yrotrad)) * 0.4 > 9.5) || ((xpos+0.1 - float(sin(yrotrad)) * 0.4 < -9.5)) || ((zpos+5 - float(cos(yrotrad)) * 0.4) > 10.5) || ((zpos+5 - float(cos(yrotrad)) * 0.4) < -10.5))
 		return;
 	if (!grabbing){
 		xpos -= float(cos(yrotrad)) * 0.3;
